@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.wf-appcontainer {
+    min-height: 625px;
+    box-sizing: border-box;
+    --wf-active-color: var(--theme-palette-color-1, #5867ef);
+    --wf-active-content: var(--theme-button-text-initial-color, #fff);
+    --wf-neutral-color: var(--theme-border-color, #5867ef);
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+}
+
+.wf-appcontainer button {
+    border: 1px solid #A7A9AC;
+    color: var(--wf-active-conten, #fff);
+    background-color: var(--wf-active-color, #5867ef);
+}
+
+.wf-accordion ul:last-of-type {
+    border-top: 1px solid white;
+    position: relative;
+    top: -1px;
+}
+
+.wf-accordion {
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin-bottom: 0;
+    flex-shrink: 1;
+    flex-grow: 0;
+}
+
+.wf-accordion ul {
+    border-top: 0; 
+    font-size: 12px;
+    margin-top: 0.5rem;
+}
+
+.wf-accordion li {
+    border: 1px solid #fff;
+    border-bottom: 1px solid #E0E0DF !important;
+    color: #343847;
+    border-bottom: 0;
+    list-style-type: none;
+    margin: 0;
+    user-select: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.wf-accordion li:last-child {
+    border: 1px solid #fff !important;
+}
+
+.wf-group-items, .wf-poi-list {
+    padding-left: 0;
+}
+
+.wf-group-items li {
+    transition: background-color 0.3s ease;
+}
+
+.wf-group-items li:hover {
+    padding-left: 24px;
+    transition: padding 0.3s ease;
+}
+
+.wf-group-items li.wf-active > label {
+    font-weight: 700;
+}
+
+#wf-menu-items > li {
+    font-weight: 600;
+    position: relative;
+    border: 1px solid #fff;
+    border-bottom: 1px solid #E0E0DF;
+    padding: 0;
+  }
+
+#wf-menu-items > li > label:hover {
+    padding-left: 18px;
+    transition: padding 0.3s ease;
+    cursor: pointer;
+}
+
+#wf-menu-items .wf-menu-label {
+    width: 100%;
+    display: block;
+    padding: 12px 8px;
+}
+
+#wf-menu-items > li.wf-active > .wf-menu-label {
+    font-weight: 700;
+} 
+
+#wf-menu-items > li > .wf-menu-label > li:before {
+    content: "\f105";
+    font-family: 'FontAwesome';
+    position: absolute;
+    left: 0.5rem;
+    top: 9px;
+    background-color: #fff;
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    line-height: 1.5rem;
+    border: 1px solid #3c4d58;
+    text-align: center;
+    color: #3c4d58;
+    display: none;
+}
+
+#wf-menu-items > li > .wf-menu-label > li.wf-active:before {
+    transform: rotate(90deg);
+    transition: transform 0.5s ease;
+    display: block;   
+}
+
+#wf-menu-content {
+    scrollbar-color: var(--wf-neutral-color) #E0E0DF;
+    scrollbar-width: thin; 
+}
+
+#wf-menu-content::-webkit-scrollbar {
+    width: 8px;
+}
