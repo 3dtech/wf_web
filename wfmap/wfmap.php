@@ -2,7 +2,7 @@
 /*
 Plugin Name: 3D Wayfinder
 Plugin URI: https://www.3dwayfinder.com/wordpress
-Version: 1.0.10
+Version: 1.1.1
 Author: 3D Wayfinder
 Author URI: https://www.3dwayfinder.com/
 Description: 3D Wayfinder embedding to a Wordpress page
@@ -46,12 +46,33 @@ class WFWordpress {
 	}
 
 
+	private function mergeAtts($pairs, $atts) {
+		$atts = (array) $atts;
+		$out  = array();
+
+		foreach ( $pairs as $name => $default ) {
+			$out[ $name ] = $default;
+		}
+
+		$_name = "";
+		foreach ( $atts as $name => $default ) {
+			$_name = $name;
+			if (str_contains($name, "-") !== false) {
+				$_name = str_replace('-', '', ucwords($name, '-'));
+				$_name = lcfirst($_name);
+			}
+			$out[ $_name ] = $atts[ $name ];
+		}
+
+		return $out;
+	}
+
 	/**
 	 * Adds shortcode that includes the map
 	 */
 	public function shortcode( $atts ) {
 		$defaults = array( "project" => "demo", "group" => "NA", "maptype" => "2d", "wf_settings" =>  json_encode((object)[]));
-		$options = shortcode_atts($defaults, $atts);
+		$options = $this->mergeAtts($defaults, $atts);
 		if( !class_exists( 'WP_Filesystem_Direct' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
 			require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';

@@ -9,7 +9,7 @@
         </symbol>
     </defs>
 </svg>
-<div class="wf-appcontainer wt-w-full wt-flex wt-flex-col-reverse sm:wt-flex-row wf-items-stretch {customClasses}" style="max-height: {maxHeight}vh;">
+<div id="wf_container" class="wf-appcontainer wt-w-full wt-flex wt-flex-col-reverse md:wt-flex-row wf-items-stretch {customClasses}" style="max-height: {maxHeight}vh;">
     {#if menu}
     <div class="wf-menu sm:wt-w-full wt-mb-4 wt-basis-1/3 wt-grow-0 wt-flex wt-flex-col">
         <div class="sm:wt-visible">
@@ -68,7 +68,7 @@
     <div class="wf-map-container wt-grow">
         <div class="wf-map wt-w-full wt-relative">
             <canvas id="map" width="400" height="300"></canvas>
-            <div class="wf-map-buttons">
+            <div class="wf-map-buttons" style="left: {align == 'right' ? '1rem': 'inherit'}; right: {align == 'right' ? 'auto': '1rem'}">
                 <div id="wf-floors">
                 {#each floors as [id, floor]}
                     <button class="wp-element-button, {id == activeFloor ? 'wf-active' : ''}" on:click={showFloor(id)}>{floor}</button>
@@ -93,7 +93,7 @@
                 {/if}
                 {#if showPathButton}
                 <button class="wp-element-button wf-btn wt-flex wt-gap-2 wt-items-center" on:click={showPath}>
-                    <span data-translation-element="show_path">Show directions</span>
+                    <span data-translation-element="show_path">{ showPathTrans }</span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="wf-icon wf-path"><path style="fill: currentColor" d="M160 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zM126.5 199.3c-1 .4-1.9 .8-2.9 1.2l-8 3.5c-16.4 7.3-29 21.2-34.7 38.2l-2.6 7.8c-5.6 16.8-23.7 25.8-40.5 20.2s-25.8-23.7-20.2-40.5l2.6-7.8c11.4-34.1 36.6-61.9 69.4-76.5l8-3.5c20.8-9.2 43.3-14 66.1-14c44.6 0 84.8 26.8 101.9 67.9L281 232.7l21.4 10.7c15.8 7.9 22.2 27.1 14.3 42.9s-27.1 22.2-42.9 14.3L247 287.3c-10.3-5.2-18.4-13.8-22.8-24.5l-9.6-23-19.3 65.5 49.5 54c5.4 5.9 9.2 13 11.2 20.8l23 92.1c4.3 17.1-6.1 34.5-23.3 38.8s-34.5-6.1-38.8-23.3l-22-88.1-70.7-77.1c-14.8-16.1-20.3-38.6-14.7-59.7l16.9-63.5zM68.7 398l25-62.4c2.1 3 4.5 5.8 7 8.6l40.7 44.4-14.5 36.2c-2.4 6-6 11.5-10.6 16.1L54.6 502.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L68.7 398z"/></svg>
                 </button>
                 {/if}
@@ -136,12 +136,14 @@
     let parentGroup = "";
     let parentSet = false;
     let language = "en";
+    let mainContainer = document.getElementById("wf_app");
 
     function parseOptions(wayfinder, _opt) {
 
         for(var o in _opt) {
-            if(wayfinder.options[o]) {
-                wayfinder.options[o] = _opt[o];
+            console.log('opt', o, wayfinder.options.hasOwnProperty(o), _opt[o])
+            if(wayfinder.options.hasOwnProperty(o)) {
+                wayfinder.options[o] =  _opt[o] == "false" ? false : (( _opt[o] == "true") ? true : _opt[o]);
             }
         }
     }
@@ -180,7 +182,7 @@
     
 
         if (hasOption(WF_OPTIONS.menu)) {
-            menu = (WT_OPTIONS.menu == "true");
+            menu = (WF_OPTIONS.menu == "true");
         }
 
         if(hasOption(WF_OPTIONS.group)) {
@@ -199,19 +201,38 @@
         if(hasOption(WF_OPTIONS.align)) {
             align = WF_OPTIONS.align;
         }
+
+        if(hasOption(WF_OPTIONS.pathButton)) {
+            showPathButton = (WF_OPTIONS.pathButton == true);
+        }
+
+        if(hasOption(WF_OPTIONS.color_active)) {
+            console.log('color', WF_OPTIONS.color_active, mainContainer)
+            if(mainContainer) {
+                mainContainer.style.setProperty("--wf-active-color", WF_OPTIONS.color_active);
+            }
+        }
+
+
+        if(align == "right") {
+            customClasses += "md:wt-flex-row-reverse"
+        }
     }
     
+    console.log('showPathButton', showPathButton, hasOption(WF_OPTIONS.pathButton), WF_OPTIONS.pathButton, !!WF_OPTIONS.pathButton)
 
     let floors = [];
     let groups = [];
     
     let popupPOI = null;
     let popupVisible = false;
+    let showPathTrans = "";
     let poiPopup = null; //element
     let activeFloor = -1;
 
     let searchVisible = false;
     let groupsVisible = false;
+    
 
     let search = {
 		keyword: "",
@@ -222,7 +243,6 @@
     let wayfinder;
 
     function loadScript (url, callback) {
-        console.log('loadScript', url)
         const script = document.createElement('script');        
         script.onload = (ev) => {
             if (typeof callback == "function") {
@@ -264,8 +284,7 @@
             }
            
             language = wayfinder.getLanguage();
-            wayfinder.building.getSortedFloors().forEach((floor) => {
-                
+            wayfinder.building.getSortedFloors().forEach((floor) => {   
                 if(floor.getShowInMenu()) {
                     floors.push([floor.id, floor.getName(language)]);
                 }
@@ -276,7 +295,6 @@
                 var parent = wayfinder.getGroupWithSlug(parentGroup);
                 if (typeof parent === "object") {
                     mainGroups = parent.getChildren().map(id => {
-                        console.log('map', id, wayfinder.poiGroups[id], typeof wayfinder.poiGroups[id], wayfinder.poiGroups[id].id)
                         return wayfinder.poiGroups[id];
                     });
                 }
@@ -287,14 +305,14 @@
 
             console.log('mainGroups', mainGroups, "parentGroup", parentGroup)
             Object.values(mainGroups).forEach((group) => {
-                console.log('group', group.getName(language), group.getShowInMenu())
                 if(group.getShowInMenu() && (!group.parent || parentSet)) {
                     groups.push(makeGroup(group, wayfinder.getPOIGroups()));
                 }
             })
 
             poiPopup = document.getElementById("poi-popup");
-            console.log('poiPopup', poiPopup, document.getElementById("poi-popup"))
+            wayfinder.translator.translate(language);       
+            showPathTrans = wayfinder.translator.get("show_path"); 
         });
 
         wayfinder.events.on("floor-change", (floor) => {
@@ -387,10 +405,12 @@
             wayfinder.showFloor(poi.getFloor())
             showPopup(poi);
             groupsVisible = false;
+            wayfinder.setLanguage(language);
         }
     }
 
     function showPopup (poi) {
+        
         popupPOI = poi;
         if (poi && poiPopup) {
             let width = 155;
@@ -419,8 +439,7 @@
             }
             else {
                 popupVisible = false;
-            }
-           
+            }           
         }
     }
 
@@ -635,15 +654,14 @@
     .pin-down {
         background-color: white !important;
         transform: rotate(45deg);
-        width: 8px;
-        height: 8px;
+        width: 10px;
+        height: 10px;
         left: 50%;
-        margin-left: -4px;
+        margin-left: -5px;
         position: relative;
-        bottom: 4px;
+        bottom: 5px;
         margin-top: -1px;
-        box-shadow: 0px 0px 12px rgba(0,0,0,0.3);
-        z-index: -1;
+        z-index: 0;
     }
 
     .wf-groups-button {

@@ -7,6 +7,7 @@
 		"build": "vite build --base=#BASE#",
 		"build-wordpress": "WF_PACKAGE=wordpress vite build --base=#BASE#",
 		"build-full": "WF_PACKAGE=full vite build --base=#BASE#",
+		"build-kliinikum": "WF_PACKAGE=kliinikum-wordpress vite build --base=#BASE#",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch"

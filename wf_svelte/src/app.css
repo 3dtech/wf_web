@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-.wf-appcontainer {
+#wf-app {
     min-height: 625px;
     box-sizing: border-box;
     --wf-active-color: var(--theme-palette-color-1, #5867ef);
@@ -15,7 +15,7 @@
 
 .wf-appcontainer button {
     border: 1px solid #A7A9AC;
-    color: var(--wf-active-conten, #fff);
+    color: var(--wf-active-content, #fff);
     background-color: var(--wf-active-color, #5867ef);
 }
 
@@ -73,6 +73,7 @@
 
 .wf-group-items li.wf-active > label {
     font-weight: 700;
+    color: var(--wf-active-color, #5867ef);
 }
 
 #wf-menu-items > li {

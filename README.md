@@ -1,45 +1,56 @@
-# Tested plugins
-We tested the following plugins
+# 3D Wayfinder Minimal Web Frontend
+This implements basic wayfinder features usually used on websites (list of shops, floor buttons, search)
+
+## Configuration
+Prepend the following JavaScript variables to configure the user interface:
+```
+<script>
+   	var WF_OPTIONS = {"maptype":"2d","project":"PROJECT_ID","api":"cdn","language":"en","menu":"false","align":"left","classes":"","height":"80"};
+    var WF_SETTINGS = {};
+</script>
+```
+### WF_OPTIONS
+These are the user interface options:
+- **maptype** - 2d or 3d
+- **project** - project id
+- **api** - where to pull the data. "live" - directly from our EU servers, "cdn" - from global CDN
+- **menu** - display a side menu
+- **align** - align menu left or right
+- **classes** - extra CSS classes appended to the app container
+- **height** - how heigh can the app be in vh units
+- **kiosk** - starting point of your path. A navigation node ID from our editor.
+
+### WF_SETTINGS
+Override any 3D Wayfinder settings that are defined in Admin panel -> Advanced -> Settings
+Example {"mouse.enable-moving": false} - disables map movement
+
+## Build
+Go into **wf_svelte** directory to build the UI
 
 ```
-webview_flutter: ^4.10.0
-flutter_blue_plus: ^1.34.5
+cd wf_svelte
+```
+### Run development server
+
+```	
+npm run dev
 ```
 
-# Receiving Wayfinder events
-To receive events from the WebView we added a JavaScriptChannel to the WebViewController instance. This will send every WayfinderEvent as a JSON array. The first parameter is the event type like ('data-loaded', 'map-click' etc)
+### Build a **standalone application** to dist folder
 
+```	
+npm run build
 ```
-controller.addJavaScriptChannel(
-   'WayfinderChannel',
-   onMessageReceived: (JavaScriptMessage message) {
-      debugPrint(message.message);
-   },
-)
+### Build a Wordpress application that is copied to **../wfmap/app/**
+```	
+npm run build-wordpress
 ```
 
-# To start BLE positioning
-```
-_controller.runJavaScript('window.wayfinder.startBeaconLocating()');
-```
-This will let 3DWayfinder know to start calculating a position
+## Wordpress
 
-# Sending BLE beacons to wayfinder
+Zip wfmap folder and upload as a plugin to your wordpress site.
+
+Include a **Shortcode** tag in your page.
+```	
+[wfmap project="PROJECT_ID" type="2d" align="right" language="et" kiosk="1003"]
 ```
-_controller.runJavaScript('window.wayfinder.pushReading("ble", {
-	"uuid": "0000180a-0000-1000-8000-00805f9b34fb", 
-	"major": 1, 
-	"minor": 1, 
-	"rssi": 1, 
-	"tx": 1
-})');
-```
-
-### Where 
-* uuid: is the beacon manufacturers provided id
-* major: is usually used for different floors
-* minor: incremented id (unique for each floor)
-* rssi: measured signal strength (provided by the mobile device)
-* tx: power of the device (provided by the mobile device)
-
-

@@ -37,17 +37,13 @@ export default defineConfig({
 				async handler() {
 					console.log('pre', process.env.WF_PACKAGE)
 					// Do some logic; whatever you want
-					if (process.env.WF_PACKAGE == 'full') {
-						let html = await fs.readFile('./full.html', 'utf8');
-						return html;
-					}
-					else if (process.env.WF_PACKAGE == 'wordpress') {
-						// Grab new HTML content to place into index.html
-						let html = await fs.readFile('./app.html', 'utf8');
+					if (process.env.WF_PACKAGE) {
+						let html = await fs.readFile('./html/' + process.env.WF_PACKAGE + '.html', 'utf8');
+						console.log('html', html)
 						return html;
 					}
 
-					return await fs.readFile('./dev.html', { encoding: 'utf8' });
+					return await fs.readFile('./html/dev.html', { encoding: 'utf8' });
 				}
 			},
 		},
@@ -61,14 +57,14 @@ export default defineConfig({
 					let wf_settings = parseOptions(__env, "vite_wf_settings");
 
 					if (ctx.path == "/index.html") {
-						if (process.env.WF_PACKAGE == 'wordpress') {
+						if (process.env.WF_PACKAGE.indexOf("wordpress") > -1 ) {
 							src = src.replace(/src\="[.](.*)"/, 'src="%dir%$1"')
 							
 						}
 						else {
-							src = src.replace('"%WF_OPTIONS%"', wf_options)
-							src = src.replace('"%WT_OPTIONS%"', wt_options)
-							src = src.replace('"%WF_SETTINGS%"', wf_settings)
+							src = src.replace('%WF_OPTIONS%', wf_options)
+							src = src.replace('%WT_OPTIONS%', wt_options)
+							src = src.replace('%WF_SETTINGS%', wf_settings)
 						}
 						return src;
 					}
@@ -81,7 +77,7 @@ export default defineConfig({
 		}
 	],
 	build: {
-		outDir: process.env.WF_PACKAGE == "wordpress" ? '../wfmap/app/': './dist',
+		outDir: process.env.WF_PACKAGE.indexOf("wordpress") > -1  ? '../wfmap/app/': './dist',
 		emptyOutDir: true, // also necessary
 	}
 });
