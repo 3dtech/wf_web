@@ -50,7 +50,7 @@ npm run build-wordpress
 
 Zip wfmap folder and upload as a plugin to your wordpress site.
 
-Include a **Shortcode** tag in your page.
+Include a **SHORTCODE** tag in your page.
 ```	
 [wfmap project="PROJECT_ID" type="2d" align="right" language="et" kiosk="1003"]
 ```

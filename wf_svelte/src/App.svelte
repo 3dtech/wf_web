@@ -68,7 +68,7 @@
     <div class="wf-map-container wt-grow">
         <div class="wf-map wt-w-full wt-relative">
             <canvas id="map" width="400" height="300"></canvas>
-            <div class="wf-map-buttons" style="left: {align == 'right' ? '1rem': 'inherit'}; right: {align == 'right' ? 'auto': '1rem'}">
+            <div class='wf-map-buttons' class:md:wt-left-4={align == 'right'} class:md:wt-right-4={align == 'left'}>
                 <div id="wf-floors">
                 {#each floors as [id, floor]}
                     <button class="wp-element-button, {id == activeFloor ? 'wf-active' : ''}" on:click={showFloor(id)}>{floor}</button>
@@ -698,8 +698,7 @@
 
     .wf-map-buttons {
         position: absolute;
-        top: 1rem;
-        right: 1rem;
+        top: 0rem;
         display: flex;
         flex-direction: column-reverse;
         justify-content: flex-start;
@@ -822,9 +821,9 @@
         }
 
         #wf-floors button {
-            width: 40px;
-            height: 40px;
-            line-height: 40px;
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
         }
     }
 
