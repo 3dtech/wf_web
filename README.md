@@ -1,7 +1,28 @@
 # 3D Wayfinder Minimal Web Frontend
 This implements basic wayfinder features usually used on websites (list of shops, floor buttons, search)
 
-## Configuration
+## Configure while building
+
+Copy wf_svelte/env.example to wf_svelte/.env. Change the necessary variables:
+
+```
+VITE_WF_MOBILE=false // if you need mobile device specific features (positioning etc). Works only in mobile apps.
+VITE_WF_SCRIPTS=cdn //Pull JS files from CDN
+VITE_WF_MAPTYPE=3d // 2d or 3d
+VITE_WF_PROJECT=demo // project id
+VITE_WF_API=cdn // Pull data from CDN, live or local
+VITE_WF_LANGUAGE=en // initial language
+VITE_WF_MENU=true // show menu
+VITE_WF_ALIGN=right // align menu to left or right
+VITE_WT_GROUP= // show only locations from this group
+VITE_WF_CLASSES= // adds extra CSS classes to the app container
+VITE_WF_HEIGHT=100 // maximum height of the map
+VITE_WF_PATH_BUTTON=true // display a "Show Path"
+VITE_WF_NAVIGATE_BUTTON=false // display a "Navigate" button. Works only on mobile apps
+</script>
+```
+
+## Configuration after building
 Prepend the following JavaScript variables to configure the user interface:
 ```
 <script>
