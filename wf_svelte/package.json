@@ -1,13 +1,15 @@
 {
 	"name": "wf-svelte",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"private": true,
 	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build --base=#BASE#",
+		"dev": "WF_PACKAGE=dev vite dev",
+		"dev-marassi": "WF_PACKAGE=marassi vite dev",
+		"build": "WF_PACKAGE=full vite build --base=#BASE#",
 		"build-wordpress": "WF_PACKAGE=wordpress vite build --base=#BASE#",
 		"build-full": "WF_PACKAGE=full vite build --base=#BASE#",
 		"build-kliinikum": "WF_PACKAGE=kliinikum-wordpress vite build --base=#BASE#",
+		"build-marassi": "WF_PACKAGE=marassi vite build --base=#BASE#",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch"
@@ -27,6 +29,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@sveltejs/adapter-static": "^3.0.5"
+		"@sveltejs/adapter-static": "^3.0.5",
+		"vite-plugin-static-copy": "^3.1.3"
 	}
 }

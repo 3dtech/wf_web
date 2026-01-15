@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-#wf-app {
+#wf_app {
     min-height: 625px;
     box-sizing: border-box;
     --wf-active-color: var(--theme-palette-color-1, #5867ef);

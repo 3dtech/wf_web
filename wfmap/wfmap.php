@@ -2,7 +2,7 @@
 /*
 Plugin Name: 3D Wayfinder
 Plugin URI: https://www.3dwayfinder.com/wordpress
-Version: 1.1.2
+Version: 1.1.3
 Author: 3D Wayfinder
 Author URI: https://www.3dwayfinder.com/
 Description: 3D Wayfinder embedding to a Wordpress page
