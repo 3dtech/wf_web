@@ -8,6 +8,9 @@
     --wf-active-color: var(--theme-palette-color-1, #5867ef);
     --wf-active-content: var(--theme-button-text-initial-color, #fff);
     --wf-neutral-color: var(--theme-border-color, #5867ef);
+    --wf-secondary-color: var(--theme-button-text-initial-color, #fff);
+    --wf-secondary-content: var(--theme-palette-color-1, #5867ef);
+
     display: flex;
     overflow: hidden;
     width: 100%;

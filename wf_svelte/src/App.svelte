@@ -7,8 +7,14 @@
             <path fill="currentColor" d="m 0,14.5449 h 20.569799 v 2.05698 H 0 Z" transform="rotate(-45 0 14.5449)" />
             <path fill="currentColor" transform="rotate(-135 14.5454 16)" d="m 14.5454,16 h 20.569799 v 2.05698 H 14.5454 Z" />
         </symbol>
-        <symbol id="icon-navigate" viewBox="0 -960 960 960">
+        <symbol id="icon-compass" viewBox="0 -960 960 960">
             <path d="m300-300 280-80 80-280-280 80-80 280Zm180-120q-25 0-42.5-17.5T420-480q0-25 17.5-42.5T480-540q25 0 42.5 17.5T540-480q0 25-17.5 42.5T480-420Zm0 340q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q133 0 226.5-93.5T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160Zm0-320Z"/>
+        </symbol>
+        <symbol id="icon-navigate" viewBox="0 -960 960 960">
+            <path d="M260-840q-45 0-72.5 50T160-680q0 63 17.5 111.5T210-496l110-22q13-32 26.5-73t13.5-89q0-60-27.5-110T260-840Zm55 520q19 0 32-14t13-39q0-17-8-35t-16-32l-96 20q0 40 17.5 70t57.5 30Zm385-320q-45 0-72.5 50T600-480q0 48 13.5 88.5T640-318l110 22q15-24 32.5-72T800-480q0-60-27.5-110T700-640Zm-55 520q40 0 57.5-30t17.5-70l-96-20q-8 14-16 32t-8 35q0 20 12.5 36.5T645-120ZM315-240q-77 0-117-57t-38-128l-18-27q-11-17-36.5-77T80-680q0-103 51-171.5T260-920q85 0 132.5 75.5T440-680q0 58-16 107t-28 79l8 13q8 14 22 44.5t14 63.5q0 57-35.5 95T315-240ZM645-40q-54 0-89.5-38T520-173q0-33 14-63.5t22-44.5l8-13q-12-30-28-79t-16-107q0-89 47.5-164.5T700-720q78 0 129 68.5T880-480q0 91-25.5 150.5T818-253l-18 28q1 71-38.5 128T645-40Z"/>
+        </symbol>
+        <symbol id="icon-explore" viewBox="0 -960 960 960">
+            <path d="M640-560v-126 126ZM174-132q-20 8-37-4.5T120-170v-560q0-13 7.5-23t20.5-15l212-72 240 84 186-72q20-8 37 4.5t17 33.5v337q-15-23-35.5-42T760-528v-204l-120 46v126q-21 0-41 3.5T560-546v-140l-160-56v523l-226 87Zm26-96 120-46v-468l-120 40v474Zm496.5-32q22.5-20 23.5-60 1-34-22.5-57T640-400q-34 0-57 23t-23 57q0 34 23 57t57 23q34 0 56.5-20ZM640-160q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 23-5.5 43.5T778-238l102 102-56 56-102-102q-18 11-38.5 16.5T640-160ZM320-742v468-468Z"/>
         </symbol>
     </defs>
 </svg>
@@ -80,23 +86,38 @@
                 <canvas id="map" width="400" height="300"></canvas>
             </div>
             <div class="wf-map-buttons wt-flex wt-flex-col wt-gap-12 {align == 'left' ? 'wt-left-0 md:wt-left-4' : 'wt-right-0 md:wt-right-4'}">
-                <div id="wf-floors">
+                <div id="wf-floors" class="wt-overflow-y-auto">
                 {#each floors as [id, floor]}
                     <button class="wp-element-button {id == activeFloor ? 'wf-active' : ''}" on:click={showFloor(id)}>{floor}</button>
                 {/each}
                 </div>
                 <div id="wf-additional-buttons">
-                    {#if enableLocate}
-                    <button id="wf-locate-button" class="wp-element-button {compassRotating ? 'wf-active' : ''} " on:click={locateUser} title="Enable location">
+                     
+                    {#if enableCompass}
+                    <button id="wf-compass-button" class="wp-element-button {compassRotating ? 'wf-active' : ''} " on:click={toggleCompass} title="Enable location">
                         <svg class="wf-icon wt-h-12" viewBox="0 0 16 19">
-                            <use xlink:href="#icon-navigate" />
+                            <use xlink:href="#icon-compass" />
                         </svg>
+                    </button>
+                    {/if}
+
+                    {#if enableLocate}
+                    <button id="wf-locate-button" class="wp-element-button {locateEnabled ? 'wf-active' : ''} " on:click={locateUser} title="Enable location">
+                        {#if locateEnabled}
+                            <svg class="wf-icon wt-h-12" viewBox="0 0 16 19">
+                                <use xlink:href="#icon-explore" />
+                            </svg>
+                        {:else}
+                            <svg class="wf-icon wt-h-12" viewBox="0 0 16 19">
+                                <use xlink:href="#icon-navigate" />
+                            </svg>
+                        {/if}
                     </button>
                     {/if}
                 </div>
             </div>
             {#if showPathText && pathTextEnabled}
-                <div class="wt-absolute wt-top-1/2 wt-left-1/2 wt-width-30ch wt-ml-[-15ch] wt-bg-white wt-py-4 wt-px-8">{pathText}</div>
+                <div class="wf-path-text wt-absolute wt-top-4 wt-left-1/2 wt-ml-[-25%] wt-py-4 wt-px-8">{pathText}</div>
             {/if}
             {#if enablePopup}
             <div id="poi-popup">
@@ -162,6 +183,8 @@
     let pathTextTime = 0;
 
     let enableLocate = false; 
+    let locateEnabled = false;
+    let enableCompass = false;
     let compassRotating = false;
 
     let isFlutterInAppWebViewReady = false;
@@ -244,7 +267,6 @@
             align = WF_OPTIONS.align;
         }
 
-        console.log('path text option', hasOption(WF_OPTIONS.path_button), WF_OPTIONS.path_button,  WF_OPTIONS.path_button == true);
         if(hasOption(WF_OPTIONS.path_button)) {
             showPathButton = (WF_OPTIONS.path_button == "true");
         }
@@ -259,9 +281,8 @@
             }
         }
 
-        console.log('navigate_button', WF_OPTIONS.navigate_button);
-        if(hasOption(WF_OPTIONS.navigate_button)) {
-            enableLocate = (WF_OPTIONS.navigate_button == "true");
+        if(hasOption(WF_OPTIONS.compass_button)) {
+            enableCompass = (WF_OPTIONS.compass_button == "true");
         }
 
         if(align == "right") {
@@ -422,6 +443,7 @@
         })
 
         wayfinder.events.on("map-click", (poi) => {
+            console.log('map-click', poi)
             setTimeout(()=> {
                 showPopup(poi);
             }, 300);
@@ -436,12 +458,15 @@
         });
 
         wayfinder.events.on("map-touch", function () {
+            console.log('map-touch');
             hidePopup();
         });
 
         wayfinder.events.on("map-update", function () {
-            if (popupPOI)
+            console.log('map-update');
+            if (popupPOI && popupVisible) { 
                 showPopup(popupPOI);
+            }
         });
 
         wayfinder.events.on("language-change", () => {
@@ -465,6 +490,8 @@
                 wayfinder.showFloor(location.floor)
             }
 
+            locateEnabled = true;
+
             if (wayfinder.logic.path && wayfinder.logic.path.toText) {
                 var key = "location-path-start";
                 pathText = wayfinder.translator.get(key, ["", wayfinder.logic.path.toText.distance + "m"]);
@@ -476,10 +503,14 @@
                     }, pathTextTime);
                 } 
             }
+
+            if(hasOption(WF_OPTIONS.navigate_button)) {
+                enableLocate = (WF_OPTIONS.navigate_button == "true");
+            }   
         });
 
         wayfinder.events.on("location-change", function(location) {
-            if (location && location.floor) {
+            if (location && location.floor && locateEnabled) {
                 wayfinder.showFloor(location.floor);
             }
         });
@@ -497,6 +528,10 @@
                         showPathText = false;
                     }, pathTextTime);
                 } 
+            }
+
+            if (wayfinder.logic.path && wayfinder.logic.path.fromText) {
+                locateEnabled = true;
             }
         });
 
@@ -613,7 +648,6 @@
     }
 
     function showPopup (poi) {
-        
         popupPOI = poi;
         if (poi && poiPopup) {
             let width = 155;
@@ -685,11 +719,15 @@
         }
     }
 
-    function locateUser() {
+    function toggleCompass () {
         if(wayfinder) {
             compassRotating = !compassRotating;
             wayfinder.toggleCompassRotating(compassRotating);
         }
+    }
+
+    function locateUser() {
+        locateEnabled = !locateEnabled;
     }
 
 </script>
@@ -725,6 +763,11 @@
     .wf-map-container {
         width: 100%;
         flex-grow: 1;
+    }
+
+    .wf-path-text {
+        color: var(--wf-secondary-content);
+        background-color: var(--wf-secondary-color);
     }
 
     .wf-menu {
@@ -914,7 +957,7 @@
         flex-direction: column;
         justify-content: space-between;
         align-items: flex-start;
-        overflow-y: auto;
+        
         min-height: 40%;
         padding-bottom: 1rem;
     }
@@ -922,6 +965,7 @@
     #wf-floors {
         display: flex;
         flex-direction: column;
+        overflow-y: auto;
     }
 
     .wf-map-buttons button {
@@ -1041,16 +1085,16 @@
         }
 
         .wf-map-buttons {
-            top: 25%;
-            max-height: 50vh;
+            top: 4rem;
+            bottom: 4rem;
         }
     
 
         .wf-map-buttons button {
-            width: 64px;
-            height: 64px;
-            line-height: 64px;
-            font-size: 24px;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            font-size: 20px;
         }
 
         .wf-map-buttons svg {
