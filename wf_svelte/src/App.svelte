@@ -173,6 +173,7 @@
     let menu = true;
     let enablePopup = true;
     let showPathButton = true;
+    let showYah = true;
     let align = "left";
     let customClasses = "";
     let maxHeight = 100;
@@ -270,6 +271,12 @@
         if(hasOption(WF_OPTIONS.path_button)) {
             showPathButton = (WF_OPTIONS.path_button == "true");
         }
+        
+        if(hasOption(WF_OPTIONS.show_yah)) {
+            showYah = (WF_OPTIONS.show_yah == "true");
+        }
+
+        
 
         if(hasOption(WF_OPTIONS.popup)) {
             enablePopup = (WF_OPTIONS.popup == "true");
@@ -365,6 +372,7 @@
 
         window.wayfinder = wayfinder;
         parseOptions(wayfinder, WF_OPTIONS);
+        wayfinder.options.drawKioskIcon = showYah;
         WayfinderAPI.LOCATION = parseLocation()
         wayfinder.open(project);
         

@@ -1,9 +1,9 @@
 {
 	"name": "wf-svelte",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"private": true,
 	"scripts": {
-		"dev": "WF_PACKAGE=$npm_config_template vite dev --host=192.168.88.19",
+		"dev": "WF_PACKAGE=$npm_config_template vite dev",
 		"build": "WF_PACKAGE=$npm_config_template vite build --base=#BASE#",
 		"build-wordpress": "WF_PACKAGE=wordpress vite build --base=#BASE#",
 		"build-full": "WF_PACKAGE=full vite build --base=#BASE#",
