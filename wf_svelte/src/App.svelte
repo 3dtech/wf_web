@@ -228,7 +228,7 @@
             type = WF_OPTIONS.maptype;
         }
 
-        let loadScripts = (hasOption(WF_OPTIONS.scripts) && WF_OPTIONS.scripts !== "local");
+        let loadScripts = !(hasOption(WF_OPTIONS.scripts) && WF_OPTIONS.scripts == "local");
 
         if (loadScripts) {
             if(type === "3d") {
@@ -241,6 +241,8 @@
                 scripts.push(wf_scripts["mobile"]);
             }
         }
+
+        console.log('scripts', scripts, loadScripts)
 
         if(hasOption(WF_OPTIONS.project)) {
             project = WF_OPTIONS.project;

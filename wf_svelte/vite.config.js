@@ -46,6 +46,7 @@ export default defineConfig({
 				order: 'pre', // Tells Vite to run this before other processes
 				async handler() {
 					// Do some logic; whatever you want
+					console.log('Running pre-build HTML transformation', process.env);
 					if (process.env.WF_PACKAGE) {
 						let html = await fs.readFile('./html/' + process.env.WF_PACKAGE + '.html', 'utf8');
 						return html;
