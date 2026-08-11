@@ -2,7 +2,7 @@
 /*
 Plugin Name: 3D Wayfinder
 Plugin URI: https://www.3dwayfinder.com/wordpress
-Version: 1.1.3
+Version: 1.2.5
 Author: 3D Wayfinder
 Author URI: https://www.3dwayfinder.com/
 Description: 3D Wayfinder embedding to a Wordpress page
@@ -10,10 +10,9 @@ Text Domain: wfmap
 License: GPLv2
 */
 
-class WFWordpress {
+class WFWordpressMap {
 
 	// Call globals
-	
 
 	/**
 	 * A reference to an instance of this class.
@@ -31,7 +30,7 @@ class WFWordpress {
 	public static function get_instance() {
 
 		if ( null == self::$instance ) {
-			self::$instance = new WFWordpress();
+			self::$instance = new WFWordpressMap();
 		}
 
 		return self::$instance;
@@ -97,15 +96,20 @@ class WFWordpress {
 		return $part;
 	}
 
-	public static function enqueFiles() {
-		//wp_enqueue_script('wf-ideapark.jscrollpane', plugin_dir_url(__FILE__) . 'jquery.jscrollpane.min.js');
-		//wp_enqueue_style('wf-ideapark.css', plugins_url('jquery.jscrollpane.css', __FILE__ ));
+	public static function enqueueFiles() {
+		$style_path = plugin_dir_path( __FILE__ ) . 'app/wfmap.css';
 
-		//wp_enqueue_script('wf-ideapark.jscrollpane', plugin_dir_url(__FILE__) . 'jquery.jscrollpane.min.js');
+		if ( file_exists( $style_path ) ) {
+			wp_enqueue_style(
+				'wfmap',
+				plugin_dir_url( __FILE__ ) . 'app/wfmap.css',
+				array(),
+				filemtime( $style_path )
+			);
+		}
 	}
 
 }
-add_action( 'plugins_loaded', array( 'WFWordpress', 'get_instance' ) );
-add_action( 'wp_enqueue_scripts',array( 'WFWordpress', 'enqueFiles' ) );
-
+add_action( 'plugins_loaded', array( 'WFWordpressMap', 'get_instance' ) );
+add_action( 'wp_enqueue_scripts', array( 'WFWordpressMap', 'enqueueFiles' ) );
 
