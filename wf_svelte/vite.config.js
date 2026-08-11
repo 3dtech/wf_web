@@ -7,6 +7,8 @@ import { viteStaticCopy } from 'vite-plugin-static-copy'
 const EMBED_JS = `<script type="text/javascript" src="./js/dist/2d/latest/Wayfinder2D.debug.js"></script>
 				  <script type="text/javascript" src="./js/dist/mobile/latest/WayfinderMobile.debug.js"></script>`;
 const __env = loadEnv("", process.cwd())
+const wfPackage = process.env.WF_PACKAGE || process.env.VITE_WF_PACKAGE || __env.VITE_WF_PACKAGE || "";
+const isWordpressPackage = wfPackage.indexOf("wordpress") > -1;
 const ignoreOpt = ["map", "mapSize"];
 console.log('__env', __env, process.cwd())
 function parseOptions(env, prefix) {
@@ -29,9 +31,9 @@ export default defineConfig({
 	server: {
 		open: "dev.html",
 	},
-	plugins: [svelte(), viteSingleFile({
+	plugins: [svelte(), ...(!isWordpressPackage ? [viteSingleFile({
 		inlinePattern: ['*.css']
-	}),
+	})] : []),
 	viteStaticCopy({
       targets: [
         {
@@ -46,9 +48,9 @@ export default defineConfig({
 				order: 'pre', // Tells Vite to run this before other processes
 				async handler() {
 					// Do some logic; whatever you want
-					console.log('Running pre-build HTML transformation', process.env);
-					if (process.env.WF_PACKAGE) {
-						let html = await fs.readFile('./html/' + process.env.WF_PACKAGE + '.html', 'utf8');
+					if (wfPackage) {
+						console.log('Running pre-build HTML transformation', wfPackage);
+						let html = await fs.readFile('./html/' + wfPackage + '.html', 'utf8');
 						return html;
 					}
 
@@ -64,10 +66,12 @@ export default defineConfig({
 					let wf_options = parseOptions(__env, "vite_wf");
 					let wt_options = parseOptions(__env, "vite_wt");
 					let wf_settings = parseOptions(__env, "vite_wf_settings");
-
+					console.log('Running post-build HTML transformation', wfPackage);
 					if (ctx.path == "/index.html") {
-						if (process.env.WF_PACKAGE && process.env.WF_PACKAGE.indexOf("wordpress") > -1 ) {
-							src = src.replace(/src\="[.](.*)"/, 'src="%dir%$1"')
+						if (isWordpressPackage) {
+							src = src.replace(/src\="[^"]*(index-[^"/]+\.js)"/, 'src="%dir%/$1"')
+							src = src.replace(/<script type="module"(?![^>]*data-cookieconsent)/, '<script type="module" data-cookieconsent="ignore"')
+							src = src.replace(/\s*<link[^>]+href="[^"]*wfmap\.css"[^>]*>/, '')
 							src = src.replace('%EMBED%', '')
 						}
 						else {
@@ -90,7 +94,15 @@ export default defineConfig({
 		}
 	],
 	build: {
-		outDir: process.env.WF_PACKAGE.indexOf("wordpress") > -1  ? '../wfmap/app/': './dist',
+		outDir: isWordpressPackage ? '../wfmap/app/': './dist',
 		emptyOutDir: true, // also necessary
+		assetsDir: isWordpressPackage ? '' : 'assets',
+		rollupOptions: isWordpressPackage ? {
+			output: {
+				assetFileNames: assetInfo => assetInfo.name && assetInfo.name.endsWith('.css')
+					? 'wfmap.css'
+					: '[name]-[hash][extname]',
+			},
+		} : undefined,
 	}
 });

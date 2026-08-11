@@ -1,0 +1,168 @@
+<script>
+    var WF_OPTIONS = %WF_OPTIONS%;
+    var WF_SETTINGS = %WF_SETTINGS%;
+</script>
+<script type="module" src="/src/main.js"></script>
+<div id="wf_app"></div>
+
+<style>
+    #wf_app {
+        --wf-active-color: #006d68;
+        --wf-active-content: #ffffff;
+        --wf-neutral-color: #b9dcd2;
+        --wf-secondary-color: #d9eae5;
+        --wf-secondary-content: #002634;
+
+        color: #002634;
+        background-color: #ffffff;
+        font-family: "proxima-nova", Arial, sans-serif;
+        font-size: 0.875rem;
+        line-height: 1.375rem;
+    }
+
+    #wf_app button,
+    #wf_app input {
+        font: inherit;
+    }
+
+    #wf_app .wf-menu {
+        padding-right: 1rem;
+    }
+
+    #wf_app .poi-search-container input {
+        height: 3rem;
+        padding-top: 0;
+        padding-bottom: 0;
+        border: 1px solid #d9eae5;
+        border-radius: 0.25rem;
+        color: #002634;
+        background-color: #ffffff;
+        font-size: 1rem;
+        line-height: 2.875rem;
+    }
+
+    #wf_app .poi-search-container input:focus {
+        border-color: #006d68;
+        box-shadow: 0 0 0 2px rgb(0 109 104 / 15%);
+    }
+
+    #wf_app .poi-search-container #wf-search-icon {
+        top: 0.75rem;
+        color: #002634;
+    }
+
+    #wf_app .poi-search-container .search-clear {
+        top: 1rem;
+    }
+
+    #wf_app #wf-search-items > li {
+        padding: 0.625rem 0.75rem;
+        line-height: 1.5rem;
+    }
+
+    #wf_app .wf-groups-button > button {
+        border: 1px solid #006d68;
+        border-radius: 3.125rem;
+        color: #ffffff;
+        background-color: #006d68;
+        font-weight: 700;
+        transition:
+            background-color 0.2s ease,
+            opacity 0.2s ease;
+    }
+
+    #wf_app .wf-groups-button > button:hover {
+        opacity: 0.8;
+    }
+
+    #wf_app .wf-accordion li,
+    #wf_app #wf-menu-items > li {
+        border-color: #ffffff;
+        border-bottom-color: #d9eae5 !important;
+        color: #002634;
+    }
+
+    #wf_app .wf-group-items li {
+        background-color: #ffffff;
+    }
+
+    #wf_app .wf-group-items li:hover {
+        background-color: #d9eae5;
+    }
+
+    #wf_app .wf-group-items li.wf-active > label,
+    #wf_app #wf-menu-items > li.wf-active > .wf-menu-label {
+        color: #006d68;
+    }
+
+    #wf_app #wf-menu-content {
+        scrollbar-color: #006d68 #d9eae5;
+    }
+
+    #wf_app .wf-map-buttons button {
+        border: 1px solid #d9eae5;
+        border-radius: 50%;
+        color: #002634;
+        background-color: #ffffff;
+        box-shadow: 0 0.3125rem 0.625rem rgb(0 79 89 / 10%);
+        font-weight: 700;
+        transition:
+            background-color 0.2s ease,
+            color 0.2s ease,
+            opacity 0.2s ease;
+    }
+
+    #wf_app .wf-map-buttons button:hover {
+        opacity: 0.8;
+    }
+
+    #wf_app .wf-map-buttons button.wf-active {
+        border-color: #006d68;
+        color: #ffffff;
+        background-color: #006d68;
+    }
+
+    #wf_app .wf-map-buttons button .wf-icon {
+        fill: currentColor;
+    }
+
+    #wf_app .wf-path-text {
+        border-radius: 3.125rem;
+        color: #002634;
+        background-color: #d9eae5;
+        box-shadow: 0 0.3125rem 0.625rem rgb(0 79 89 / 10%);
+        font-weight: 700;
+    }
+
+    #wf_app #poi-popup .poi-popup-content {
+        border-radius: 0.3125rem;
+        color: #002634;
+        box-shadow: 0 0.3125rem 0.625rem rgb(0 79 89 / 15%);
+    }
+
+    #wf_app #poi-popup a {
+        color: #006d68;
+    }
+
+    #wf_app #poi-popup button {
+        border: 1px solid #006d68;
+        border-radius: 3.125rem;
+        color: #ffffff;
+        background-color: #006d68;
+        font-weight: 700;
+    }
+
+    #wf_app .pin-down {
+        background-color: #ffffff !important;
+    }
+
+    #wf_app .wf-map-container {
+        min-height: 45vh;
+    }
+
+    @media (max-width: 639px) {
+        #wf_app .wf-menu {
+            padding-right: 0;
+        }
+    }
+</style>

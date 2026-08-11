@@ -127,7 +127,7 @@
 }
 
 #wf-menu-content {
-    scrollbar-color: var(--wf-neutral-color) #E0E0DF;
+    scrollbar-color: var(--wf-active-color) #E0E0DF;
     scrollbar-width: thin; 
 }
 

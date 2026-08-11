@@ -6,12 +6,12 @@
 
     export const prerender = true;
     const wf_scripts = {
-        "2d": "https://wayfinder-cdn.com/js/dist/2d/latest/Wayfinder2D.debug.js",
+        "2d": "https://wayfinder-cdn.com/js/dist/2d/VERSION/Wayfinder2D.debug.js",
         //"2d": "./Wayfinder2D.debug.js",
-        mobile: "https://wayfinder-cdn.com/js/dist/mobile/latest/WayfinderMobile.debug.js",
+        "mobile": "https://wayfinder-cdn.com/js/dist/mobile/VERSION/WayfinderMobile.debug.js",
         //"mobile": "./WayfinderMobile.debug.js",
-        "3d": "https://wayfinder-cdn.com/js/dist/3d/latest/Wayfinder3D.debug.js",
-        frak: "https://wayfinder-cdn.com/shared/js/minified/frak2.debug.js",
+        "3d": "https://wayfinder-cdn.com/js/dist/3d/VERSION/Wayfinder3D.debug.js",
+        "frak": "https://wayfinder-cdn.com/js/dist/3d/VERSION/frak2.debug.js",
     };
 
     let scripts = [];
@@ -21,6 +21,7 @@
     let menu = true;
     let enablePopup = true;
     let showPathButton = true;
+    let showWebsiteButton = false;
     let showAccessibilityPathButton = false;
     let showYah = true;
     let align = "left";
@@ -44,6 +45,7 @@
     let parentGroup = "";
     let parentSet = false;
     let language = "en";
+    let wf_version = "dev";
     let mainContainer = document.getElementById("wf_app");
     let mapContainer = document.getElementById("map");
 
@@ -68,6 +70,10 @@
         }
     }
 
+    function replaceVersion(version, url) {
+        return url?.replace("VERSION", version);
+    }
+
     function hasOption(opt) {
         if (typeof opt === "string" && opt !== "NA") {
             return true;
@@ -81,6 +87,10 @@
 
         if (hasOption(WF_OPTIONS.maptype)) {
             type = WF_OPTIONS.maptype;
+        }
+
+        if (hasOption(WF_OPTIONS.version)) {
+            wf_version = WF_OPTIONS.version;
         }
 
         let loadScripts = !(
@@ -108,7 +118,7 @@
         if (hasOption(WF_OPTIONS.menu)) {
             menu = WF_OPTIONS.menu == "true";
         }
-
+        
         if (hasOption(WF_OPTIONS.group)) {
             parentGroup = WF_OPTIONS.group;
             parentSet = true;
@@ -133,6 +143,10 @@
         if (hasOption(WF_OPTIONS.accessibility_path_button)) {
             showAccessibilityPathButton =
                 WF_OPTIONS.accessibility_path_button == "true";
+        }
+
+        if (hasOption(WF_OPTIONS.website_url_button)) {
+            showWebsiteButton = WF_OPTIONS.website_url_button == "true";
         }
 
         if (hasOption(WF_OPTIONS.show_yah)) {
@@ -188,6 +202,7 @@
     let popupPOI = null;
     let popupVisible = false;
     let showPathTrans = "";
+    let showWebsiteTrans = "";
     let showAccessibilityPathTrans = "";
     let poiPopup = null; //element
     let activeFloor = -1;
@@ -200,8 +215,9 @@
         results: [],
     };
 
-    import { onMount } from "svelte";
+    import { onMount, tick } from "svelte";
     let wayfinder;
+    let floorsContainer;
 
     function loadScript(url, callback) {
         const script = document.createElement("script");
@@ -211,7 +227,7 @@
             }
         };
 
-        script.src = url;
+        script.src = replaceVersion(wf_version, url);
         document.head.appendChild(script);
     }
 
@@ -267,7 +283,9 @@
 
             groups = [];
             var mainGroups = [];
+
             if (parentGroup !== "") {
+                console.log('Showing parent group with slug', parentGroup);
                 var parent = wayfinder.getGroupWithSlug(parentGroup);
                 if (typeof parent === "object") {
                     mainGroups = parent.getChildren().map((id) => {
@@ -279,19 +297,25 @@
             }
 
             Object.values(mainGroups).forEach((group) => {
+                console.log('mainGroups', group, parentSet)
                 if (group.getShowInMenu() && (!group.parent || parentSet)) {
                     groups.push(makeGroup(group, wayfinder.getPOIGroups()));
                 }
             });
 
+            console.log('parentSet', parentSet, group)
+
             poiPopup = document.getElementById("poi-popup");
             wayfinder.translator.translate(language);
             showPathTrans = wayfinder.translator.get("show_path");
+            showWebsiteTrans = wayfinder.translator.get("show_website");
             showAccessibilityPathTrans = wayfinder.translator.get(
                 "show_accessibility_path",
             );
             pathTextTime =
                 wayfinder.settings.getInt("path.message.duration", 5) * 1000;
+
+            scrollFloorsToBottom();
         });
 
         wayfinder.events.on(
@@ -299,8 +323,8 @@
             (currentFloor, nextFloor, destinationFloor) => {
                 if (pathTextEnabled) {
                     pathText = wayfinder.translator.get("go_to_floor", [
-                        currentFloor.getName(wayfinder.getLanguage()),
                         destinationFloor.getName(wayfinder.getLanguage()),
+                        currentFloor.getName(wayfinder.getLanguage()),
                         nextFloor.getName(wayfinder.getLanguage()),
                     ]);
                     showPathText = true;
@@ -478,6 +502,14 @@
     onMount(() => {
         loadNext(scripts, mount);
     });
+
+    async function scrollFloorsToBottom() {
+        await tick();
+
+        if (floorsContainer) {
+            floorsContainer.scrollTop = floorsContainer.scrollHeight;
+        }
+    }
 
     function makeGroup(group, allGroups) {
         let _group = {
@@ -738,32 +770,36 @@
                         </svg>
                     {/if}
                     {#if searchVisible}
-                        <svg
-                            class="wf-icon search-clear"
-                            viewBox="0 0 16 19"
+                        <button
+                            type="button"
+                            class="search-clear"
+                            aria-label="Clear search"
                             on:click={clearSearch}
                         >
-                            <path
-                                d="m 0,14.5449 h 20.569799 v 2.05698 H 0 Z"
-                                transform="rotate(-45 0 14.5449)"
-                            />
-                            <path
-                                transform="rotate(-135 14.5454 16)"
-                                d="m 14.5454,16 h 20.569799 v 2.05698 H 14.5454 Z"
-                            />
-                        </svg>
+                            <svg class="wf-icon" viewBox="0 0 16 19">
+                                <path
+                                    d="m 0,14.5449 h 20.569799 v 2.05698 H 0 Z"
+                                    transform="rotate(-45 0 14.5449)"
+                                />
+                                <path
+                                    transform="rotate(-135 14.5454 16)"
+                                    d="m 14.5454,16 h 20.569799 v 2.05698 H 14.5454 Z"
+                                />
+                            </svg>
+                        </button>
                     {/if}
                 </div>
                 <div class="wf-groups-button">
-                    <button class="wp-element-button" on:click={showMenu}>
+                    <button
+                        class="wp-element-button"
+                        type="button"
+                        aria-expanded={groupsVisible}
+                        on:click={groupsVisible ? hideMenu : showMenu}
+                    >
                         <span data-translation-element="web-categories"
                             >Categories</span
                         >
-                        <svg
-                            class="wf-icon"
-                            viewBox="0 0 14 8"
-                            on:click={hideMenu}
-                        >
+                        <svg class="wf-icon" viewBox="0 0 14 8" aria-hidden="true">
                             <path
                                 d="M1 1L7 7L13 1"
                                 fill="none"
@@ -783,28 +819,33 @@
                     : ''}"
             >
                 <div id="wf-search-items-container">
-                    <div class="wf-menu-header hidden" on:click={clearSearch}>
+                    <button
+                        type="button"
+                        class="wf-menu-header hidden"
+                        on:click={clearSearch}
+                    >
                         <span data-translation-element="web-search-header"
                             >Otsi kauplust</span
                         >
-                        <svg class="wf-icon" viewBox="0 0 16 19">
+                        <svg class="wf-icon" viewBox="0 0 16 19" aria-hidden="true">
                             <use xlink:href="#icon-clear" />
                         </svg>
-                    </div>
+                    </button>
                     <ul id="wf-search-items" class="wf-accordion"></ul>
                 </div>
                 <div id="wf-menu-items-container">
-                    <div
+                    <button
+                        type="button"
                         class="wf-menu-header wf-mobile-menu-header wt-flex wt-items-center wt-justify-between sm:wt-hidden"
                         on:click={hideMenu}
                     >
                         <span data-translation-element="web-category-header"
                             >Sorteeri kategooria järgi</span
                         >
-                        <svg class="wf-icon" viewBox="0 0 16 19">
+                        <svg class="wf-icon" viewBox="0 0 16 19" aria-hidden="true">
                             <use xlink:href="#icon-clear" />
                         </svg>
-                    </div>
+                    </button>
                     {#if !searchVisible}
                         <Menu {groups} on:poiclicked={openPOI}></Menu>
                     {/if}
@@ -835,7 +876,11 @@
                     ? 'wt-left-0 md:wt-left-4'
                     : 'wt-right-0 md:wt-right-4'}"
             >
-                <div id="wf-floors" class="wt-overflow-y-auto">
+                <div
+                    id="wf-floors"
+                    class="wt-overflow-y-auto"
+                    bind:this={floorsContainer}
+                >
                     {#each floors as [id, floor]}
                         <button
                             class="wp-element-button {id == activeFloor
@@ -909,17 +954,7 @@
                                         class="wp-element-button"
                                         onclick="showInfo()"
                                     >
-                                        <svg
-                                            class="wf-icon wf-info"
-                                            width="100"
-                                            height="100"
-                                            viewbox="0 0 18 19"
-                                        >
-                                            <path
-                                                style="fill: #9B5BA4"
-                                                d="M8.87695 0.125C8.91211 0.125 8.94727 0.125 8.98242 0.125C9.0293 0.125 9.07617 0.125 9.12305 0.125C9.7207 0.125 10.3008 0.183594 10.8633 0.300781C11.4375 0.417969 11.9824 0.587891 12.498 0.810547C13.0137 1.02148 13.5059 1.28516 13.9746 1.60156C14.4434 1.91797 14.8711 2.27539 15.2578 2.67383C15.6797 3.07227 16.0605 3.51758 16.4004 4.00977C16.7402 4.49023 17.0273 5.00586 17.2617 5.55664C17.4961 6.0957 17.6777 6.66406 17.8066 7.26172C17.9355 7.85938 18 8.47461 18 9.10742C18 9.7168 17.9414 10.3086 17.8242 10.8828C17.707 11.457 17.5371 12.0137 17.3145 12.5527C17.0918 13.0801 16.8223 13.5781 16.5059 14.0469C16.1895 14.5273 15.832 14.9668 15.4336 15.3652C15.0352 15.7871 14.6016 16.168 14.1328 16.5078C13.6523 16.8477 13.1426 17.1348 12.6035 17.3691C12.0762 17.6035 11.5195 17.7852 10.9336 17.9141C10.3477 18.0547 9.74414 18.125 9.12305 18.125C9.08789 18.125 9.05273 18.125 9.01758 18.125C8.98242 18.125 8.94141 18.125 8.89453 18.125C8.29688 18.125 7.71094 18.0664 7.13672 17.9492C6.5625 17.832 6.01172 17.6621 5.48438 17.4395C4.96875 17.2168 4.47656 16.9473 4.00781 16.6309C3.55078 16.3145 3.12305 15.957 2.72461 15.5586C2.30273 15.1719 1.92188 14.7383 1.58203 14.2578C1.25391 13.7891 0.972656 13.291 0.738281 12.7637C0.503906 12.2246 0.322266 11.668 0.193359 11.0938C0.0644531 10.5078 0 9.9043 0 9.2832C0 9.27148 0 9.26562 0 9.26562C0 9.25391 0 9.24805 0 9.24805C0 9.20117 0 9.1543 0 9.10742C0 9.04883 0 8.99023 0 8.93164C0 8.33398 0.0585938 7.75391 0.175781 7.19141C0.292969 6.62891 0.462891 6.08984 0.685547 5.57422C0.908203 5.05859 1.17188 4.57227 1.47656 4.11523C1.79297 3.6582 2.15039 3.23633 2.54883 2.84961C2.94727 2.42773 3.38086 2.04688 3.84961 1.70703C4.33008 1.37891 4.83398 1.09766 5.36133 0.863281C5.90039 0.628906 6.46289 0.447266 7.04883 0.318359C7.63477 0.189453 8.23828 0.125 8.85938 0.125C8.87109 0.125 8.88281 0.125 8.89453 0.125H8.87695ZM9.89648 3.0957C9.88477 3.0957 9.86719 3.0957 9.84375 3.0957C9.83203 3.0957 9.81445 3.0957 9.79102 3.0957C9.56836 3.0957 9.35742 3.13672 9.1582 3.21875C8.95898 3.30078 8.7832 3.41797 8.63086 3.57031C8.50195 3.6875 8.39648 3.83398 8.31445 4.00977C8.23242 4.17383 8.18555 4.34961 8.17383 4.53711V4.55469C8.17383 4.56641 8.17383 4.58398 8.17383 4.60742C8.17383 4.63086 8.17383 4.6543 8.17383 4.67773C8.17383 4.81836 8.19727 4.95312 8.24414 5.08203C8.30273 5.21094 8.37891 5.31641 8.47266 5.39844C8.58984 5.50391 8.71875 5.58594 8.85938 5.64453C9.01172 5.69141 9.16992 5.71484 9.33398 5.71484C9.35742 5.71484 9.375 5.71484 9.38672 5.71484C9.41016 5.71484 9.42773 5.71484 9.43945 5.71484C9.45117 5.71484 9.46289 5.71484 9.47461 5.71484C9.48633 5.71484 9.49805 5.71484 9.50977 5.71484C9.7207 5.71484 9.91992 5.67969 10.1074 5.60938C10.3066 5.52734 10.4824 5.42188 10.6348 5.29297C10.7637 5.16406 10.8691 5.01172 10.9512 4.83594C11.0332 4.66016 11.0742 4.4668 11.0742 4.25586C11.0742 4.24414 11.0742 4.23828 11.0742 4.23828C11.0742 3.47656 10.6816 3.0957 9.89648 3.0957ZM7.55859 14.7148C7.86328 14.6914 8.15039 14.6387 8.41992 14.5566C8.70117 14.4629 8.96484 14.3457 9.21094 14.2051H9.19336C9.5918 14.0059 9.96094 13.7832 10.3008 13.5371C10.6523 13.2793 10.9746 12.998 11.2676 12.6934L10.916 12.2188C10.7285 12.3945 10.5176 12.541 10.2832 12.6582C10.0488 12.7754 9.79688 12.8633 9.52734 12.9219H9.50977C9.32227 12.9219 9.29883 12.6758 9.43945 12.1836L10.248 9.05469C10.5879 7.80078 10.4473 7.17383 9.82617 7.17383C9.49805 7.20898 9.1875 7.2793 8.89453 7.38477C8.60156 7.47852 8.32617 7.60156 8.06836 7.75391L8.08594 7.73633C7.65234 7.94727 7.24805 8.17578 6.87305 8.42188C6.50977 8.66797 6.1582 8.93164 5.81836 9.21289L5.83594 9.19531L6.15234 9.70508C6.35156 9.55273 6.56836 9.41797 6.80273 9.30078C7.04883 9.18359 7.30664 9.10156 7.57617 9.05469H7.59375C7.74609 9.05469 7.74609 9.27148 7.59375 9.70508L6.89062 12.6758C6.55078 14.0352 6.77344 14.7148 7.55859 14.7148Z"
-                                            />
-                                        </svg>
+                                        <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info-icon lucide-info"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
 
                                         <span data-translation-element="info"
                                             >Info</span
@@ -966,6 +1001,16 @@
                                     >
                                 </button>
                             {/if}
+                             {#if showWebsiteButton}
+                                <a href={popupPOI.getAttribute("website-url")?.value} target="_blank">
+                                    <button
+                                    class="wp-element-button wf-btn wt-flex wt-gap-2 wt-items-center"
+                                >
+                                    <svg class="wf-icon" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                    <span data-translation-element="show_website">{showWebsiteTrans}</span>
+                                </button>
+                            </a>
+                            {/if}
                         </div>
                         <div class="pin-down"></div>
                     {/if}
@@ -988,6 +1033,10 @@
 
     .wf-menu-header {
         padding: 12px;
+        border: 0;
+        width: 100%;
+        background: transparent;
+        text-align: left;
     }
 
     .wf-mobile-menu-header {
@@ -1014,6 +1063,7 @@
     .wf-path-text {
         color: var(--wf-secondary-content);
         background-color: var(--wf-secondary-color);
+        box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.3);
     }
 
     .wf-menu {
@@ -1052,10 +1102,15 @@
         outline: none;
     }
 
-    svg.search-clear {
+    .search-clear {
         position: absolute;
         top: 12px;
         right: 12px;
+        border: 0;
+        padding: 0;
+        background: transparent;
+        line-height: 0;
+        cursor: pointer;
     }
 
     .poi-search-container #wf-search-icon {
@@ -1092,17 +1147,14 @@
         margin-top: -30px;
         margin-left: -80px;
         transform-origin: top;
-        animation-duration: 0.5s;
-        animation-iteration-count: 2;
         cursor: pointer;
     }
 
-    #poi-popup.active {
-        animation-name: bounce-2;
-        animation-timing-function: ease;
-    }
-
     #poi-popup .poi-popup-content {
+        animation-name: bounce-2;
+        animation-duration: 0.5s;
+        animation-iteration-count: 2;
+        animation-timing-function: ease;
         background-color: #fff;
         padding: 11px;
         box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.3);
@@ -1181,7 +1233,7 @@
         display: none;
     }
 
-    .wf-groups-button.active > button > i {
+    .wf-groups-button > button[aria-expanded="true"] > .wf-icon {
         transform: rotate(90deg);
         transition: transform 0.5s ease;
     }
@@ -1211,19 +1263,31 @@
     .wf-map-buttons {
         position: absolute;
         top: 30%;
+        bottom: 1rem;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: flex-start;
         align-items: flex-start;
-
-        min-height: 40%;
+        max-height: calc(70% - 1rem);
+        min-height: 0;
         padding-bottom: 1rem;
     }
 
     #wf-floors {
         display: flex;
         flex-direction: column;
+        flex: 1 1 auto;
+        min-height: 0;
         overflow-y: auto;
+    }
+
+    #wf-floors > button {
+        flex: 0 0 auto;
+    }
+
+    #wf-additional-buttons {
+        flex: 0 0 auto;
+        margin-top: 0.5rem;
     }
 
     .wf-map-buttons button {
@@ -1268,14 +1332,19 @@
         flex-grow: 1;
     }
 
-    /* Smartphones (portrait and landscape) ----------- */
+    /* Smartphones in portrait keep the stacked mobile layout. */
     @media (max-width: 500px) {
+        :global(#wf_app) {
+            overflow: visible;
+        }
+
         .wf-entry-content {
             padding: 2em 1em !important;
         }
 
         .wf-appcontainer {
             flex-wrap: nowrap;
+            flex-direction: column-reverse !important;
         }
 
         .wf-appcontainer > div {
@@ -1285,9 +1354,24 @@
 
         /* Styles */
         .wf-menu {
+            width: 100%;
+            flex-basis: auto !important;
             height: 8.5rem;
             box-sizing: border-box;
+            margin-bottom: 0;
             padding-left: 0.5rem;
+            padding-right: 0.5rem;
+            padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: #fff;
+            box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .wf-map-container {
+            width: 100%;
+            padding-bottom: 0;
         }
 
         .wf-groups-button {
@@ -1328,7 +1412,7 @@
             flex-shrink: 1;
         }
 
-        #wf-menu-items {
+        :global(#wf-menu-items) {
             padding-bottom: 2em;
         }
 
@@ -1356,6 +1440,22 @@
         .wf-map-buttons svg {
             height: 32px !important;
             width: auto;
+        }
+    }
+
+    @media (pointer: coarse) and (orientation: landscape) and (max-height: 500px) {
+        #wf-search-label {
+            display: none;
+        }
+
+        :global(#wf-menu-items) {
+            margin-top: 0;
+        }
+
+        .wf-map-buttons {
+            top: 0;
+            bottom: 0;
+            max-height: 100%;
         }
     }
 
