@@ -2,7 +2,7 @@
 /*
 Plugin Name: 3D Wayfinder
 Plugin URI: https://www.3dwayfinder.com/wordpress
-Version: 1.2.5
+Version: 1.3.6
 Author: 3D Wayfinder
 Author URI: https://www.3dwayfinder.com/
 Description: 3D Wayfinder embedding to a Wordpress page
@@ -89,8 +89,8 @@ class WFWordpressMap {
 			unset($options["wf_settings"]);
 		}
 		
-		$part = str_replace("%WF_OPTIONS%", json_encode($options), $part);
-		$part = str_replace("%WF_SETTINGS%", $settings, $part);
+		$part = str_replace("%WF_OPTIONS%", esc_attr(wp_json_encode($options)), $part);
+		$part = str_replace("%WF_SETTINGS%", esc_attr($settings), $part);
 		//$part = str_replace("%GROUP%", $a["group"], $part);
 		//$part = str_replace("%TYPE%", $a["type"], $part);
 		return $part;
@@ -112,4 +112,3 @@ class WFWordpressMap {
 }
 add_action( 'plugins_loaded', array( 'WFWordpressMap', 'get_instance' ) );
 add_action( 'wp_enqueue_scripts', array( 'WFWordpressMap', 'enqueueFiles' ) );
-
