@@ -1,0 +1,34 @@
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#wf_app {
+    --wf-active-color: #e2aca1;
+    --wf-active-content: #262626;
+    --wf-secondary-color: #262626;
+    --wf-secondary-content: #fff;
+}
+
+#wf_app,
+.wf-appcontainer,
+.wf-map-container {
+    width: 100%;
+    height: 100%;
+}
+
+.wf-map-buttons {
+    min-height: 40vh;
+}
+
+#wf-locate-button:not(.wf-active) {
+    background-color: var(--wf-active-content);
+    fill: #fff;
+}
+
+#wf-locate-button svg {
+    height: 1.5rem;
+}

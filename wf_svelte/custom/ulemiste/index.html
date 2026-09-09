@@ -1,0 +1,168 @@
+<script type="module" src="/src/main.js" data-cookieconsent="ignore"></script>
+<svg class="wf-symbols-definitions" aria-hidden="true">
+    <defs>
+        <symbol id="ulemiste-icon-info" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" fill="#343847" stroke="none" />
+            <path d="M12 10v7M12 7h.01" fill="none" stroke="#fff" stroke-width="2" />
+        </symbol>
+        <symbol id="ulemiste-icon-wc" viewBox="0 0 24 24">
+            <circle cx="7" cy="5" r="2" />
+            <circle cx="17" cy="5" r="2" />
+            <path d="M4 21l1-7H3l2-5h4l2 5H9l1 7M14 21v-6h-2l2-6h6l2 6h-2v6M17 9v12" />
+        </symbol>
+        <symbol id="ulemiste-icon-lift" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="18" height="18" rx="1" />
+            <path d="M7 7l2-2 2 2M9 5v5M17 10l-2 2-2-2M15 12V7M8 18v-4M16 18v-4" />
+            <circle cx="8" cy="12" r="1" /><circle cx="16" cy="12" r="1" />
+        </symbol>
+        <symbol id="ulemiste-icon-escalator" viewBox="0 0 24 24">
+            <circle cx="7" cy="5" r="2" />
+            <path d="M5 20h3l7-9h4M5 9h4l3 4M14 18h5v-3M11 21h8v-3" />
+        </symbol>
+        <symbol id="ulemiste-icon-trepp" viewBox="0 0 24 24">
+            <path d="M3 20h5v-4h4v-4h4V8h5" />
+        </symbol>
+        <symbol id="ulemiste-icon-atm" viewBox="0 0 24 24">
+            <rect x="4" y="3" width="16" height="18" rx="1" />
+            <path d="M7 7h10v4H7zM8 16h8M9 18h6" />
+        </symbol>
+        <symbol id="ulemiste-icon-joogivesi" viewBox="0 0 24 24">
+            <path d="M4 5h10v4h-3M7 5V3h8a3 3 0 0 1 3 3v2M8 11h8l-1 10H9L8 11ZM18 11v.01" />
+        </symbol>
+        <symbol id="ulemiste-icon-parkla" viewBox="0 0 24 24">
+            <path d="M7 21V3h6a5 5 0 0 1 0 10H7M7 8h6" />
+        </symbol>
+        <symbol id="ulemiste-icon-buss" viewBox="0 0 24 24">
+            <rect x="4" y="3" width="16" height="16" rx="3" />
+            <path d="M4 12h16M8 19v2M16 19v2M8 16h.01M16 16h.01M7 7h10" />
+        </symbol>
+        <symbol id="ulemiste-icon-tramm" viewBox="0 0 24 24">
+            <rect x="5" y="5" width="14" height="14" rx="3" />
+            <path d="m9 5 3-3 3 3M5 12h14M8 22l2-3M16 22l-2-3M9 16h.01M15 16h.01" />
+        </symbol>
+        <symbol id="ulemiste-icon-rong" viewBox="0 0 24 24">
+            <path d="M7 4h10a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3Z" />
+            <path d="M4 11h16M8 22l2-3M16 22l-2-3M8 15h.01M16 15h.01M9 7h6" />
+        </symbol>
+        <symbol id="ulemiste-rest-red" viewBox="0 0 24 24">
+            <path d="m12 2 2.1 6.1L20 5l-3.1 5.9L23 13l-6.1 2.1L20 21l-5.9-3.1L12 24l-2.1-6.1L4 21l3.1-5.9L1 13l6.1-2.1L4 5l5.9 3.1L12 2Z" />
+        </symbol>
+        <symbol id="ulemiste-rest-yellow" viewBox="0 0 24 24">
+            <circle cx="9" cy="8" r="5" /><circle cx="15" cy="8" r="5" />
+            <circle cx="9" cy="15" r="5" /><circle cx="15" cy="15" r="5" />
+        </symbol>
+        <symbol id="ulemiste-rest-blue" viewBox="0 0 24 24">
+            <path d="M12 2S6 10 6 15a6 6 0 0 0 12 0c0-5-6-13-6-13Z" />
+        </symbol>
+        <symbol id="ulemiste-rest-gray" viewBox="0 0 24 24">
+            <path d="m5 18 2-10 8-5 5 14-7 4-8-3Z" /><path d="m7 8 6 13M15 3l-2 18" />
+        </symbol>
+        <symbol id="ulemiste-rest-green" viewBox="0 0 24 24">
+            <path d="M3 12c5-6 11-7 17-3-2 7-8 10-17 3Z" /><path d="M5 13c5-1 9-2 13-4M10 11l2 5M14 10l2 3" />
+        </symbol>
+    </defs>
+</svg>
+<div class="wf-container">
+    <div id="wf_app" data-wf-options="%WF_OPTIONS%" data-wf-settings="%WF_SETTINGS%"></div>
+    <div class="wf-symbols-dropdown hidden sm:block">
+        <button
+            class="wf-symbols-header"
+            type="button"
+            aria-expanded="false"
+            aria-controls="wf-symbols"
+        >
+            <svg class="wf-icon" width="100" height="100" viewbox="0 0 16 16">
+                <circle cx="6" cy="6" r="4" fill="#9B5BA4"/>
+            </svg>
+            <span data-translation-element="tingmargid">Tingmärgid</span>
+        </button>
+        <div id="wf-symbols" class="wf-symbols-menu">
+        <ul>
+            <li>
+                <svg class="wf-icon" width="100" height="100" viewbox="0 0 16 16">
+                    <use href="#ulemiste-icon-info" />
+                </svg>
+                <label data-translation-element="ting-infolett">Infolett</label>
+            </li>
+            <li>
+                <svg class="wf-icon" width="100" height="100" viewbox="0 0 16 16">
+                    <use href="#ulemiste-icon-wc" />
+                </svg>
+                <label data-translation-element="ting-wc">Tualett</label>
+            </li>
+            <li>
+                <svg class="wf-icon" width="100" height="100" viewbox="0 0 16 16">
+                    <use href="#ulemiste-icon-lift" />
+                </svg>
+                <label data-translation-element="ting-lift">Lift</label>
+            </li>
+            <li>
+                <svg class="wf-icon" width="100" height="100" viewbox="0 0 16 16">
+                    <use href="#ulemiste-icon-escalator" />
+                </svg>
+                <label data-translation-element="ting-eskalaator">Eskalaator</label>
+            </li>
+            <li>
+                <svg class="wf-icon" width="100" height="100" viewbox="0 0 16 16">
+                    <use href="#ulemiste-icon-trepp" />
+                </svg>
+                <label data-translation-element="ting-trepp">Trepp</label>
+            </li>
+            <li>
+                <svg class="wf-icon" width="100" height="100" viewbox="0 0 16 16">
+                    <use href="#ulemiste-icon-atm" />
+                </svg>
+                <label data-translation-element="ting-atm">Pangaautomaat</label>
+            </li>
+            <li>
+                <svg class="wf-icon" width="100" height="100" viewbox="0 0 16 16">
+                    <use href="#ulemiste-icon-joogivesi" />
+                </svg>
+                <label data-translation-element="ting-joogivesi">Joogiveekraan</label>
+            </li>
+            <li>
+                <svg class="wf-icon" width="100" height="100" viewbox="0 0 16 16">
+                    <use href="#ulemiste-icon-parkla" />
+                </svg>
+                <label data-translation-element="ting-parkla">Parkla</label>
+            </li>
+            <li>
+                <svg class="wf-icon" width="100" height="100" viewbox="0 0 16 16">
+                    <use href="#ulemiste-icon-buss" />
+                </svg>
+                <label data-translation-element="ting-buss">Buss</label>
+            </li>
+            <li>
+                <svg class="wf-icon" width="100" height="100" viewbox="0 0 16 16">
+                    <use href="#ulemiste-icon-tramm" />
+                </svg>
+                <label data-translation-element="ting-tramm">Tramm</label>
+            </li>
+            <li>
+                <svg class="wf-icon" width="100" height="100" viewbox="0 0 16 16">
+                    <use href="#ulemiste-icon-rong" />
+                </svg>
+                <label data-translation-element="ting-rong">Rong</label>
+            </li>
+        </ul>
+        <div class="ting-header" data-translation-element="ting-puhkealad">Puhkealad</div>
+        <div class="wf-rest-area-icons" aria-hidden="true">
+            <svg class="wf-rest-area-icon wf-rest-area-icon--red" viewbox="0 0 24 24">
+                <use href="#ulemiste-rest-red" />
+            </svg>
+            <svg class="wf-rest-area-icon wf-rest-area-icon--yellow" viewbox="0 0 24 24">
+                <use href="#ulemiste-rest-yellow" />
+            </svg>
+            <svg class="wf-rest-area-icon wf-rest-area-icon--blue" viewbox="0 0 24 24">
+                <use href="#ulemiste-rest-blue" />
+            </svg>
+            <svg class="wf-rest-area-icon wf-rest-area-icon--gray" viewbox="0 0 24 24">
+                <use href="#ulemiste-rest-gray" />
+            </svg>
+            <svg class="wf-rest-area-icon wf-rest-area-icon--green" viewbox="0 0 24 24">
+                <use href="#ulemiste-rest-green" />
+            </svg>
+        </div>
+        </div>
+    </div>
+</div>

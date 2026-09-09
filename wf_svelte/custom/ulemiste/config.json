@@ -1,0 +1,23 @@
+{
+    "options": {
+        "mobile": false,
+        "scripts": "cdn",
+        "maptype": "2d",
+        "project": "f77f3630755f36959fbea9d174ac8ca5",
+        "api": "cdn",
+        "version": "3.18.1",
+        "language": "et",
+        "menu": true,
+        "align": "left",
+        "group": "shops",
+        "classes": "",
+        "height": 100,
+        "path_button": false,
+        "website_url_button": true,
+        "accessibility_path_button": false,
+        "show_yah": false,
+        "compass_button": false,
+        "navigate_button": false
+    },
+    "settings": {}
+}

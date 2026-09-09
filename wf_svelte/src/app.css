@@ -61,6 +61,10 @@
     border: 1px solid #fff !important;
 }
 
+.wf-group-items {
+    margin-bottom: 0 !important;
+}
+
 .wf-group-items, .wf-poi-list {
     padding-left: 0;
 }

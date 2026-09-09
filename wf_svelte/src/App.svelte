@@ -1,10 +1,15 @@
 <script>
-    /** global WF_OPTIONS*/
     import "./app.css";
     import Menu from "./components/Menu.svelte";
     import SearchResults from "./components/SearchResults.svelte";
 
     export const prerender = true;
+    /** @type {Record<string, any>} */
+    export let options = {};
+    /** @type {Record<string, any>} */
+    export let settings = {};
+    const WF_OPTIONS = options;
+    const WF_SETTINGS = settings;
     const wf_scripts = {
         "2d": "https://wayfinder-cdn.com/js/dist/2d/VERSION/Wayfinder2D.debug.js",
         //"2d": "./Wayfinder2D.debug.js",
@@ -109,7 +114,7 @@
             }
         }
 
-        console.log("scripts", scripts, loadScripts);
+        //console.log("scripts", scripts, loadScripts);
 
         if (hasOption(WF_OPTIONS.project)) {
             project = WF_OPTIONS.project;
@@ -219,6 +224,15 @@
     let wayfinder;
     let floorsContainer;
 
+    function dispatchLifecycleEvent(name, detail = {}) {
+        mainContainer?.dispatchEvent(
+            new CustomEvent(name, {
+                bubbles: true,
+                detail: { wayfinder, ...detail },
+            }),
+        );
+    }
+
     function loadScript(url, callback) {
         const script = document.createElement("script");
         script.onload = (ev) => {
@@ -298,7 +312,7 @@
 
             Object.values(mainGroups).forEach((group) => {
                 console.log('mainGroups', group, parentSet)
-                if (group.getShowInMenu() && (!group.parent || parentSet)) {
+                if (group.getShowInMenu() && (!group.parent || parentSet && group.getName(language))) {
                     groups.push(makeGroup(group, wayfinder.getPOIGroups()));
                 }
             });
@@ -316,6 +330,7 @@
                 wayfinder.settings.getInt("path.message.duration", 5) * 1000;
 
             scrollFloorsToBottom();
+            dispatchLifecycleEvent("wf:data-loaded");
         });
 
         wayfinder.events.on(
@@ -385,8 +400,8 @@
             }, 500);
         });
 
-        wayfinder.events.on("map-ready", (poi) => {
-            setTimeout(() => {}, 500);
+        wayfinder.events.on("map-ready", (event) => {
+            dispatchLifecycleEvent("wf:map-ready", { event });
         });
 
         wayfinder.events.on("location-success", function (location) {
@@ -537,15 +552,26 @@
         return null;
     }
 
-    function openPOI(e) {
-        let poi = wayfinder.pois[e.detail];
+    export function openPOI(poiOrId) {
+        const poi =
+            typeof poiOrId === "object"
+                ? poiOrId
+                : wayfinder?.pois[poiOrId];
+
         if (poi) {
             wayfinder.display(poi);
             showPopup(poi);
             groupsVisible = false;
             wayfinder.setLanguage(language);
             scrollToView();
+            return true;
         }
+
+        return false;
+    }
+
+    function handlePOIClick(e) {
+        openPOI(e.detail);
     }
 
     function scrollToView() {
@@ -580,7 +606,7 @@
                 poiPopup.style.setProperty("top", position[1] - offset + "px");
                 poiPopup.style.setProperty(
                     "margin-top",
-                    -poiPopup.clientHeight + "px",
+                    -(poiPopup.clientHeight / 2) + "px",
                 );
                 poiPopup.style.marginLeft = -(poiPopup.clientWidth / 2) + "px";
                 poiPopup.classList.remove("wf-pin-up");
@@ -847,12 +873,12 @@
                         </svg>
                     </button>
                     {#if !searchVisible}
-                        <Menu {groups} on:poiclicked={openPOI}></Menu>
+                        <Menu {groups} on:poiclicked={handlePOIClick}></Menu>
                     {/if}
                     {#if searchVisible}
                         <SearchResults
                             results={search.results}
-                            on:poiclicked={openPOI}
+                            on:poiclicked={handlePOIClick}
                         ></SearchResults>
                     {/if}
                 </div>
@@ -873,8 +899,8 @@
             <div
                 class="wf-map-buttons wt-flex wt-flex-col wt-gap-12 {align ==
                 'left'
-                    ? 'wt-left-0 md:wt-left-4'
-                    : 'wt-right-0 md:wt-right-4'}"
+                    ? 'wt-right-0 md:wt-right-4'
+                    : 'wt-left-0 md:wt-left-4'}"
             >
                 <div
                     id="wf-floors"
@@ -950,11 +976,8 @@
                             >
                             {#if popupPOI.web}
                                 <a href={popupPOI.web}>
-                                    <button
-                                        class="wp-element-button"
-                                        onclick="showInfo()"
-                                    >
-                                        <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info-icon lucide-info"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                    <button class="wp-element-button wt-flex wt-gap-4 wt-items-center">
+                                        <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info-icon lucide-info wt-w-[1.5em] wt-h-[1.5em]"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
 
                                         <span data-translation-element="info"
                                             >Info</span
@@ -1001,12 +1024,12 @@
                                     >
                                 </button>
                             {/if}
-                             {#if showWebsiteButton}
+                             {#if showWebsiteButton && popupPOI.getAttribute("website-url")}
                                 <a href={popupPOI.getAttribute("website-url")?.value} target="_blank">
                                     <button
                                     class="wp-element-button wf-btn wt-flex wt-gap-2 wt-items-center"
                                 >
-                                    <svg class="wf-icon" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                    <svg class="wf-icon wt-w-2em wt-h-2em" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
                                     <span data-translation-element="show_website">{showWebsiteTrans}</span>
                                 </button>
                             </a>
@@ -1148,13 +1171,14 @@
         margin-left: -80px;
         transform-origin: top;
         cursor: pointer;
-    }
 
-    #poi-popup .poi-popup-content {
         animation-name: bounce-2;
         animation-duration: 0.5s;
         animation-iteration-count: 2;
         animation-timing-function: ease;
+    }
+
+    #poi-popup .poi-popup-content {
         background-color: #fff;
         padding: 11px;
         box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.3);
@@ -1262,7 +1286,7 @@
 
     .wf-map-buttons {
         position: absolute;
-        top: 30%;
+        top: 15%;
         bottom: 1rem;
         display: flex;
         flex-direction: column;

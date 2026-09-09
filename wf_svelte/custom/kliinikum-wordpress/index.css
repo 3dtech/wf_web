@@ -1,0 +1,31 @@
+.wt-kliinikum-header {
+    border-bottom: 1px solid #001a72;
+    padding: 1em 0;
+}
+
+.wt-kliinikum-header label {
+    font-weight: 600;
+    margin-right: 1em;
+}
+
+.wt-kliinikum-header button {
+    background-color: #99ece1;
+    border: none;
+    padding: 0.4375rem 0.9375rem 0.3125rem;
+    margin-right: 1em;
+    color: #001a72;
+}
+
+.wt-kliinikum-header button.wf-active {
+    background-color: #001a72;
+    color: white;
+    font-weight: 600;
+}
+
+.wf-groups-button > button {
+    color: white !important;
+}
+
+.wf-map-container {
+    min-height: 45vh;
+}
