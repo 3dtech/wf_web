@@ -1,11 +1,14 @@
 <script>
-    import { onMount } from "svelte";
+    import { onMount, tick } from "svelte";
     import "./app.css";
     import LocationSidebar from "./components/LocationSidebar.svelte";
     import MapControls from "./components/MapControls.svelte";
     import POIPopup from "./components/POIPopup.svelte";
     import PathMessage from "./components/PathMessage.svelte";
     import IconDefinitions from "./components/IconDefinitions.svelte";
+    import DirectionsSelector from "./components/DirectionsSelector.svelte";
+    import DirectionsToggle from "./components/DirectionsToggle.svelte";
+    import { getRoutePOIs, getDirectionsLabels, showSelectedRoute } from "./lib/directions.js";
     import { readOptions, hasOption } from "./lib/options.js";
     import { makeGroup, makePOI } from "./lib/poiModels.js";
     import { createWayfinderRuntime } from "./lib/wayfinderRuntime.js";
@@ -18,7 +21,7 @@
     const WF_OPTIONS = options;
     const WF_SETTINGS = settings;
     const configuration = readOptions(WF_OPTIONS);
-    const { menu, enablePopup, showPathButton,
+    const { menu, enableDirections, enablePopup, showPathButton,
         showWebsiteButton, showAccessibilityPathButton, align,
         customClasses, maxHeight, enableCompass, parentGroup, parentSet } = configuration;
     let pathTextEnabled = false;
@@ -29,6 +32,15 @@
     let locateEnabled = false;
     let compassRotating = false;
     let language = "en";
+    /** @type {Array<{ id: string, name: string }>} */
+    let routePOIs = [];
+    let directionsLabels = getDirectionsLabels(language);
+    let routeError = "";
+    let directionsOpen = false;
+    /** @type {HTMLDivElement} */
+    let directionsPanel;
+    /** @type {HTMLButtonElement | null} */
+    let directionsTrigger = null;
     const mainContainer = document.getElementById("wf_app");
     /** @type {HTMLCanvasElement} */
     let mapContainer;
@@ -84,6 +96,7 @@
             }
 
             language = wayfinder.getLanguage();
+            refreshDirections();
             wayfinder.building.getSortedFloors().forEach((/** @type {any} */ floor) => {
                 if (floor.getShowInMenu()) {
                     floors.push([floor.id, floor.getName(language)]);
@@ -182,6 +195,7 @@
 
         runtime.on("language-change", () => {
             language = wayfinder.getLanguage();
+            refreshDirections();
         });
 
         runtime.on("display", (poi) => {
@@ -363,6 +377,49 @@
         return wayfinder.search.search(keyword).slice(0, 15).map((/** @type {any} */ poi) => makePOI(poi, language));
     }
 
+    function refreshDirections() {
+        routePOIs = getRoutePOIs(wayfinder.pois, language);
+        directionsLabels = getDirectionsLabels(language, wayfinder.translator);
+        routeError = "";
+    }
+
+    /** @param {HTMLButtonElement} trigger */
+    async function toggleDirections(trigger) {
+        directionsTrigger = trigger;
+        if (directionsOpen) {
+            closeDirections();
+            return;
+        }
+        hidePopup();
+        sidebar?.close();
+        directionsOpen = true;
+        await tick();
+        directionsPanel?.querySelector("select")?.focus({ preventScroll: true });
+    }
+
+    function closeDirections() {
+        directionsOpen = false;
+        directionsTrigger?.focus({ preventScroll: true });
+    }
+
+    /** @param {{ start: string, end: string, avoidStairs: boolean }} selection */
+    function showDirections(selection) {
+        if (!wayfinder) return;
+        routeError = "";
+        hidePopup();
+        popupPOI = null;
+        try {
+            if (!showSelectedRoute(wayfinder, configuration.type, selection)) {
+                routeError = directionsLabels.error;
+            } else {
+                scrollToView();
+            }
+        } catch (error) {
+            console.error("Unable to show selected route:", error);
+            routeError = directionsLabels.error;
+        }
+    }
+
     function showPath() {
         if (wayfinder && popupPOI) {
             runtime.setTimeout(() => {
@@ -379,7 +436,7 @@
             runtime.setTimeout(() => {
                 wayfinder.showPath(popupPOI.getNode(), popupPOI, {
                     toText: true,
-                    ignoreTypes: ["escalator", "stairs"],
+                    ignoreTypes: ["stairs", "escalator"],
                 });
                 popupPOI = null;
             });
@@ -398,15 +455,29 @@
     }
 </script>
 
+<svelte:window on:keydown={(event) => {
+    if (event.key === "Escape" && directionsOpen) closeDirections();
+}} />
+
 <IconDefinitions />
 <div
     id="wf_container"
     class="wf-appcontainer wt-w-full wt-flex wt-flex-col-reverse md:wt-flex-row wf-items-stretch {customClasses}"
+    class:wf-with-directions={enableDirections}
     style="max-height: {maxHeight}vh;"
 >
-    {#if menu}
-        <LocationSidebar bind:this={sidebar} {groups} {enablePopup} {searchPOIs}
-            on:poiselect={(event) => openPOI(event.detail)} />
+    {#if menu || enableDirections}
+        <LocationSidebar bind:this={sidebar} {groups} {enablePopup} {searchPOIs} menuEnabled={menu} directionsEnabled={enableDirections}
+            on:poiselect={(event) => openPOI(event.detail)}>
+            <svelte:fragment slot="directions">
+                {#if enableDirections}
+                    <div class="wf-mobile-directions">
+                        <DirectionsToggle open={directionsOpen} label={directionsLabels.title}
+                            on:toggle={(event) => toggleDirections(event.detail)} />
+                    </div>
+                {/if}
+            </svelte:fragment>
+        </LocationSidebar>
     {/if}
     <div class="wf-map-container wt-grow">
         <div class="wf-map wt-w-full wt-relative sm:wt-flex">
@@ -417,6 +488,20 @@
                 {compassRotating} {enableLocate} {locateEnabled}
                 on:floorselect={(event) => showFloor(event.detail)}
                 on:compasstoggle={toggleCompass} on:locationtoggle={locateUser} />
+            {#if enableDirections}
+                <div class="wf-map-directions" class:wf-map-directions-left={align === "right"}>
+                    <div id="wf-directions-panel" class="wf-directions-panel" bind:this={directionsPanel} hidden={!directionsOpen}>
+                        <DirectionsSelector pois={routePOIs} labels={directionsLabels} error={routeError} closable
+                            on:close={closeDirections}
+                            on:route={(event) => showDirections(event.detail)}
+                            on:change={() => routeError = ""} />
+                    </div>
+                    <div class="wf-desktop-directions">
+                        <DirectionsToggle open={directionsOpen} label={directionsLabels.title}
+                            on:toggle={(event) => toggleDirections(event.detail)} />
+                    </div>
+                </div>
+            {/if}
             <PathMessage visible={showPathText && pathTextEnabled} text={pathText} />
             {#if enablePopup}
                 <POIPopup {popupPOI} {popupVisible} {language} position={popupPosition}
@@ -441,6 +526,33 @@
 .wf-map-container {
     width: 100%;
     flex-grow: 1;
+}
+
+.wf-mobile-directions { display: none; }
+
+.wf-map-directions {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    width: min(420px, calc(100% - 32px));
+    max-height: calc(100% - 32px);
+    pointer-events: none;
+}
+
+.wf-map-directions-left { left: 16px; right: auto; align-items: flex-start; }
+.wf-directions-panel { width: 100%; min-height: 0; overflow-y: auto; pointer-events: auto; }
+.wf-desktop-directions { flex-shrink: 0; pointer-events: auto; }
+
+@media (max-width: 767px) {
+    .wf-mobile-directions { display: block; margin-bottom: 12px; }
+    .wf-desktop-directions { display: none; }
+    .wf-map-directions { left: 8px; right: 8px; bottom: 24px; width: auto; }
+    .wf-appcontainer.wf-with-directions { max-height: none !important; }
 }
 
 .wf-icon-puhkealad {

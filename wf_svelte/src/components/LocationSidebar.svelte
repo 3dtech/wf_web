@@ -6,6 +6,8 @@
     /** @type {any[]} */
     export let groups = [];
     export let enablePopup = true;
+    export let menuEnabled = true;
+    export let directionsEnabled = false;
     /** @type {(keyword: string) => any[]} */
     export let searchPOIs = () => [];
     let searchVisible = false;
@@ -30,7 +32,10 @@
 
 <div
     class="wf-menu sm:wt-w-full wt-mb-4 wt-basis-1/3 wt-grow-0 wt-flex wt-flex-col"
+    class:wf-with-directions={directionsEnabled}
+    class:wf-directions-only={!menuEnabled}
 >
+    {#if menuEnabled}
     <div class="sm:wt-visible">
         <label
             for="poi-search"
@@ -94,6 +99,7 @@
                 </button>
             {/if}
         </div>
+        <slot name="directions" />
         <div class="wf-groups-button">
             <button
                 class="wp-element-button"
@@ -168,6 +174,8 @@
             POI
         </div>
     {/if}
+    {/if}
+    {#if !menuEnabled}<slot name="directions" />{/if}
 </div>
 
 <style>
@@ -197,6 +205,7 @@ svg.wf-icon { height: 1rem; width: auto; display: inline-block; --color1: "red";
     padding-right: 0.5rem;
     margin-bottom: 0;
     overflow: hidden;
+    min-width: 0;
 }
 
     .wf-menu:global(.wf-hide) {
@@ -294,6 +303,20 @@ svg.wf-icon { height: 1rem; width: auto; display: inline-block; --color1: "red";
 
 .wf-groups-button > button:focus {
     outline: none;
+}
+
+@media (min-width: 768px) {
+    .wf-menu.wf-directions-only { display: none; }
+}
+
+@media (max-width: 767px) {
+    :global(#wf_container) > .wf-menu.wf-with-directions {
+        flex: 0 0 auto;
+        flex-direction: column;
+        height: auto;
+        position: relative;
+        overflow: visible;
+    }
 }
 
 /* Smartphones in portrait keep the stacked mobile layout. */

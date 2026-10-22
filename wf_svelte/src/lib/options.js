@@ -15,6 +15,7 @@ export function readOptions(options) {
         project: value("project", "demo"),
         mobile: options.mobile === "true",
         menu: flag("menu", true),
+        enableDirections: flag("directions", false),
         enablePopup: flag("popup", true),
         showPathButton: flag("path_button", true),
         showWebsiteButton: flag("website_url_button", false),
