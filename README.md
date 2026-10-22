@@ -49,6 +49,7 @@ Common UI options are:
 - `api`: `cdn` or `live`
 - `language`: initial language code
 - `menu`: whether to display the side menu
+- `directions`: display the start/destination selector only when set to `true` (default `false`, independent of `menu`); enable with `VITE_WF_DIRECTIONS=true` or `"directions": "true"` in frontend options
 - `align`: `left` or `right`
 - `group`: only show locations below this group slug
 - `classes`: extra CSS classes added to the application container
@@ -72,6 +73,8 @@ The UI is split into focused components in `src/components`:
   floor-list scrolling.
 - `POIPopup.svelte` renders POI actions and positions the popup after rendering.
 - `PathMessage.svelte` displays navigation instructions.
+- `DirectionsSelector.svelte` lets users select a starting POI and destination,
+  optionally avoiding stairs and escalators, and displays the route on the map.
 - `IconDefinitions.svelte` provides the shared SVG symbol definitions.
 
 `src/lib/options.js` normalizes frontend options, `src/lib/poiModels.js` builds
@@ -80,6 +83,24 @@ subscriptions and timers. The runtime cleans up its listeners and pending work
 when the app is destroyed. UI components emit actions rather than calling the
 Wayfinder SDK directly. Existing element IDs, translation attributes, lifecycle
 events, and the public `openPOI` helper remain available to client templates.
+
+When `directions` is enabled, a Directions button opens the selector over the
+map. On desktop it sits at the bottom corner opposite the menu (`align`); on
+mobile it appears directly below the search input. The panel starts closed,
+preserves selections when closed, and supports its close button and Escape.
+The toggle uses the shared button classes and `.wf-directions-toggle` for
+custom CSS.
+
+The directions selector lists POIs with `show_in_menu` enabled and an assigned
+navigation node, sorted by their localized names. Both endpoints are required
+and must be different. Routing uses the selected start without changing the
+configured kiosk. The card uses the existing `--wf-secondary-color`,
+`--wf-secondary-content`, `--wf-neutral-color`, `--wf-active-color`, and
+`--wf-active-content` theme variables (including the `color_active` option).
+English and Estonian labels are provided; project translations can override
+`web-directions-title`, `web-directions-close`, `web-directions-start`, `web-directions-end`,
+`web-directions-avoidStairs`, `web-directions-submit`, `web-directions-empty`,
+and `web-directions-error`.
 
 ## Client templates
 
