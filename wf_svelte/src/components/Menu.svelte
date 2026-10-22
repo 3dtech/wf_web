@@ -1,6 +1,6 @@
 <ul id="wf-menu-items" class="wf-list wf-accordion wf-group-items">
     {#each groups as group}
-        <GroupItem group={group} active={group.id == currentGroup} on:clicked={openGroup(group.id)} on:poiclicked={openPOI}></GroupItem>
+        <GroupItem group={group} active={group.id == currentGroup} on:clicked={() => openGroup(group.id)} on:poiclicked={openPOI}></GroupItem>
     {/each}
 </ul>
 

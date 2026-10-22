@@ -1,9 +1,9 @@
 <li class="wf-list-item {active ? 'wf-active' : ''}">
-    <label class="wf-menu-label"  on:click={openGroup(group.id)}>{ group.name }</label>
+    <label class="wf-menu-label"  on:click={() => openGroup(group.id)}>{ group.name }</label>
     {#if active}
         <ul class="wf-group-items">
             {#each group.children as subgroup}
-                <GroupItem group={subgroup} active={subgroup.id == currentGroup} on:clicked={openSubGroup(subgroup.id)} on:poiclicked={openPOI}></GroupItem>
+                <GroupItem group={subgroup} active={subgroup.id == currentGroup} on:clicked={() => openSubGroup(subgroup.id)} on:poiclicked={openPOI}></GroupItem>
             {/each}
         </ul>
         <ul class="wf-poi-list">

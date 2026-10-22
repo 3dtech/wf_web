@@ -61,6 +61,26 @@ Common UI options are:
 Settings override matching values from **Admin panel > Advanced > Settings**.
 For example, `{"mouse.enable-moving": false}` disables moving the map.
 
+## Frontend structure
+
+`wf_svelte/src/App.svelte` coordinates Wayfinder events and application state.
+The UI is split into focused components in `src/components`:
+
+- `LocationSidebar.svelte` owns search input and category-panel state, reusing
+  `Menu`, `GroupItem`, `POIItem`, and `SearchResults` for location lists.
+- `MapControls.svelte` renders floor, compass, and location controls and manages
+  floor-list scrolling.
+- `POIPopup.svelte` renders POI actions and positions the popup after rendering.
+- `PathMessage.svelte` displays navigation instructions.
+- `IconDefinitions.svelte` provides the shared SVG symbol definitions.
+
+`src/lib/options.js` normalizes frontend options, `src/lib/poiModels.js` builds
+list data, and `src/lib/wayfinderRuntime.js` loads the SDK and manages event
+subscriptions and timers. The runtime cleans up its listeners and pending work
+when the app is destroyed. UI components emit actions rather than calling the
+Wayfinder SDK directly. Existing element IDs, translation attributes, lifecycle
+events, and the public `openPOI` helper remain available to client templates.
+
 ## Client templates
 
 Each client template has its own directory under `wf_svelte/custom`:

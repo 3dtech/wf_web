@@ -1,5 +1,5 @@
 <li class="{active ? 'wf-active' : ''}">
-    <label class="wf-menu-label"  on:click={openPOI(poi.id)}>{ poi.name }</label>
+    <label class="wf-menu-label"  on:click={() => openPOI(poi.id)}>{ poi.name }</label>
 </li>
 
 <script>
