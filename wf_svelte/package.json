@@ -1,6 +1,6 @@
 {
 	"name": "wf-svelte",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"private": true,
 	"scripts": {
 		"dev": "WF_PACKAGE=$npm_config_template vite dev",

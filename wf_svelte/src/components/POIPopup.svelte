@@ -8,6 +8,7 @@
     export let showPathButton = true;
     export let showAccessibilityPathButton = false;
     export let showWebsiteButton = false;
+    export let showWebsiteAttributeButton = false;
     export let showPathTrans = "";
     export let showAccessibilityPathTrans = "";
     export let showWebsiteTrans = "";
@@ -46,7 +47,7 @@
             <span class="title"
                 >{popupPOI.getName(language)}</span
             >
-            {#if popupPOI.web}
+            {#if popupPOI.web && showWebsiteButton}
                 <a href={popupPOI.web}>
                     <button class="wp-element-button wt-flex wt-gap-4 wt-items-center">
                         <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info-icon lucide-info wt-w-[1.5em] wt-h-[1.5em]"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
@@ -96,7 +97,7 @@
                     >
                 </button>
             {/if}
-             {#if showWebsiteButton && popupPOI.getAttribute("website-url")}
+             {#if showWebsiteAttributeButton && popupPOI.getAttribute("website-url")}
                 <a href={popupPOI.getAttribute("website-url")?.value} target="_blank">
                     <button
                     class="wp-element-button wf-btn wt-flex wt-gap-2 wt-items-center"

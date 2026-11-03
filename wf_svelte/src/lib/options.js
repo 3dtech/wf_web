@@ -19,6 +19,7 @@ export function readOptions(options) {
         enablePopup: flag("popup", true),
         showPathButton: flag("path_button", true),
         showWebsiteButton: flag("website_url_button", false),
+        showWebsiteAttributeButton: flag("website_attribute_button", false),
         showAccessibilityPathButton: flag("accessibility_path_button", false),
         showYah: flag("show_yah", true),
         align,

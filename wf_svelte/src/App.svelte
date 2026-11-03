@@ -21,8 +21,8 @@
     const WF_OPTIONS = options;
     const WF_SETTINGS = settings;
     const configuration = readOptions(WF_OPTIONS);
-    const { menu, enableDirections, enablePopup, showPathButton,
-        showWebsiteButton, showAccessibilityPathButton, align,
+    const { menu, enableDirections, enablePopup, showPathButton, showWebsiteButton,
+        showWebsiteAttributeButton, showAccessibilityPathButton, align,
         customClasses, maxHeight, enableCompass, parentGroup, parentSet } = configuration;
     let pathTextEnabled = false;
     let showPathText = false;
@@ -505,7 +505,7 @@
             <PathMessage visible={showPathText && pathTextEnabled} text={pathText} />
             {#if enablePopup}
                 <POIPopup {popupPOI} {popupVisible} {language} position={popupPosition}
-                    {showPathButton} {showAccessibilityPathButton} {showWebsiteButton}
+                    {showPathButton} {showAccessibilityPathButton} {showWebsiteButton} {showWebsiteAttributeButton} 
                     {showPathTrans} {showAccessibilityPathTrans} {showWebsiteTrans}
                     on:route={showPath} on:accessibleroute={showAccessibilityPath} />
             {/if}

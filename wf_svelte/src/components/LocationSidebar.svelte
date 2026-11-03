@@ -326,13 +326,14 @@ svg.wf-icon { height: 1rem; width: auto; display: inline-block; --color1: "red";
     .wf-menu {
         width: 100%;
         flex-basis: auto !important;
-        height: 4rem;
+        height: 7.4rem;
         box-sizing: border-box;
         margin-bottom: 0;
         padding-left: 0.5rem;
         padding-right: 0.5rem;
         padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
         position: sticky;
+        flex-shrink: 0;
         top: 0;
         z-index: 50;
         background: #fff;
