@@ -14,7 +14,6 @@
     let currentGroup = -1;
 
     function openGroup (id) {
-        console.log('openGroup', id, currentGroup)
         if (id != currentGroup) {
             currentGroup = id;
         }

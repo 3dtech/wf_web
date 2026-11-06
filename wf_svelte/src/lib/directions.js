@@ -3,7 +3,14 @@ export function getRoutePOIs(pois, language) {
     return Object.values(pois)
         .filter((poi) => poi.getShowInMenu() && poi.getNode())
         .map((poi) => ({ id: String(poi.id), name: poi.getName(language) }))
-        .sort((first, second) => first.name.localeCompare(second.name, language));
+			.sort((first, second) => {
+				if (first && typeof first.name === "string") {
+					return first?.name?.localeCompare(second.name, language);
+				}
+				else {
+					return 0;
+				}
+			});
 }
 
 /** @param {any} wayfinder @param {string} type
